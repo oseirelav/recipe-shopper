@@ -6,3 +6,5 @@
 - conversely maybe add new recipe sheet when you write a title in recipe list
 - add a way to quickly go back to recipe list or shopping list
 - add a way to remove recipes
+- add a way to clear cart
+- add a way to undo clear cart
