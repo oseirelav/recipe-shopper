@@ -1,0 +1,8 @@
+- fix unit conversion functions
+- add a way to convert units if changed in sheet
+- add editing servings functionality
+- add links to sheets if possible
+- possibly add new recipes to recipe list automatically 
+- conversely maybe add new recipe sheet when you write a title in recipe list
+- add a way to quickly go back to recipe list or shopping list
+- add a way to remove recipes
