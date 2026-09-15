@@ -410,4 +410,10 @@ function getNewUnit(number, unit) {
       break;
   }
   const newNum = convert(number, getConversionRate(unit, newUnit));
-  return [newNum,newUnit]
+  return [newNum,newUnit];
+}
+
+function isUnit(unit) {
+  return units.some(list => list.includes(unit));
+}
+
