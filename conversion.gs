@@ -333,7 +333,7 @@ function getConversionRate(unit, newUnit) {
 
 function convert(number, conversionRate) {
   `convert to different units`
-  return number*conversionRate;
+  return Math.round(number*conversionRate*100)/100;
 }
 
 function getNewWeightUnit(number, unit) {

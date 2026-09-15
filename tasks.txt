@@ -1,5 +1,3 @@
-- fix unit conversion functions
-- add a way to convert units if changed in sheet
 - add editing servings functionality
 - add links to sheets if possible
 - possibly add new recipes to recipe list automatically 
