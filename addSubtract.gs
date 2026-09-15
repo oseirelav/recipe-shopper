@@ -1,14 +1,5 @@
-const workbook = SpreadsheetApp.getActiveSpreadsheet();
-const recipeList = workbook.getSheetByName("Recipe List");
-const shoppingList = workbook.getSheetByName("Shopping List");
-
-function setCell(sheet, row, column, value) {
-  const cell = sheet.getRange(row, column);
-  cell.setValue(value);
-}
-
 function getNumServings(name) {
-  console.log("get # servings");
+  `get # servings`
   const recipe = workbook.getSheetByName(name);
   const servingRange = recipe.getRange(1,5);
   const servings = servingRange.getValue();
@@ -16,32 +7,14 @@ function getNumServings(name) {
 }
 
 function getTotalServings(row) {
-  console.log("get total servings");
+  `get total servings`
   const servingRange = recipeList.getRange(row,3);
   const servings = servingRange.getValue();
   return servings;
 }
 
-function getConversionRate(unit, newUnit) {
-  console.log('need to code conversion rates')
-  return 1;
-}
-
-function convert(number, conversionRate) {
-  console.log("convert to different units");
-  return number*conversionRate;
-}
-
-function getNewUnit(number, unit) {
-  console.log("choose conversion");
-  newUnit = "test"
-  console.log('need to code how to get new unit')
-  newNum = convert(number, getConversionRate(unit, newUnit));
-  return (newNum,newUnit);
-}
-
 function getIngredients(name) {
-  console.log("get ingredients")
+  `get ingredients`
   const recipe = workbook.getSheetByName(name);
   const lastRow = recipe.getLastRow();
   if (lastRow < 2) {
@@ -62,7 +35,7 @@ function getIngredients(name) {
 }
 
 function AddIngredients(name, row) {
-  console.log("add ingredients")
+  `add ingredients`
   if (!name) {
     console.log("no recipe")
     return;
@@ -77,7 +50,6 @@ function AddIngredients(name, row) {
     servings = 1;
   }
   const totalServings = getTotalServings(row);
-  console.log(servings,totalServings);
   const isNumber = typeof totalServings === 'number' && Number.isFinite(totalServings);
   if (!isNumber) {
     totalServings = servings;
@@ -86,46 +58,47 @@ function AddIngredients(name, row) {
   const lastRow = shoppingList.getLastRow();
   let nextRow = lastRow + 1;
   if (lastRow < 2) {
-    console.log("list empty");
+    `list empty`
     let i = 2;
     for (const [number, unit, item] of ingredientPairs) {
-      setCell(shoppingList, i, 1, number*(totalServings/servings));
-      setCell(shoppingList, i, 2, unit);
+      const [newNum, newUnit] = getNewUnit(number*(totalServings/servings), unit);   
+      setCell(shoppingList, i, 1, newNum);
+      setCell(shoppingList, i, 2, newUnit);
       setCell(shoppingList, i, 3, item);
       i++;
     }
   }
   else {
-    console.log("list not empty");
+    `list not empty`
     shopPairs = getIngredients("Shopping List");
     for (const [number, unit, item] of ingredientPairs) {
       let add = true;
       for (let i = 2; i <= shopPairs.length+1; i++) {
         const [num, un, it] = shopPairs[i-2];
         if (it == item) {
-          console.log("item exists");
+          `item exists`
           let newNum = 0;
           let newUnit = un;   
           if (un == unit) {
-            console.log("add same unit");
+            `add same unit`
             newNum = num+number*(totalServings/servings)
           }
           else {
-            console.log("add not the same unit");
+            `add not the same unit`
             unitChange = convert(number, getConversionRate(unit, un));
             newNum = num+unitChange*(totalServings/servings)
           }
-          newNum, newUnit = getNewUnit(newNum, newUnit);
-          console.log("new num", newNum);
-          setCell(shoppingList, i, 1, newNum);
-          setCell(shoppingList, i, 2, newUnit);
+          const [newNumber, newUn] = getNewUnit(newNum, newUnit);
+          setCell(shoppingList, i, 1, newNumber);
+          setCell(shoppingList, i, 2, newUn);
           add = false;
         }
       }
       if (add) {
-        console.log("item does not exist");
-        setCell(shoppingList, nextRow, 1, number*(totalServings/servings));
-        setCell(shoppingList, nextRow, 2, unit);
+        `item does not exist`
+        const [newNum, newUnit] = getNewUnit(number*(totalServings/servings), unit);   
+        setCell(shoppingList, nextRow, 1, newNum);
+        setCell(shoppingList, nextRow, 2, newUnit);
         setCell(shoppingList, nextRow, 3, item);
         nextRow++;
       }
@@ -134,7 +107,7 @@ function AddIngredients(name, row) {
 }
 
 function SubtractIngredients(name, row) {
-  console.log("subtract ingredients")
+  `subtract ingredients`
   if (!name) {
     console.log("no recipe")
     return;
@@ -149,7 +122,6 @@ function SubtractIngredients(name, row) {
     servings = 1;
   }
   const totalServings = getTotalServings(row);
-  console.log(servings,totalServings);
   const isNumber = typeof totalServings === 'number' && Number.isFinite(totalServings);
   if (!isNumber) {
     totalServings = servings;
@@ -160,21 +132,27 @@ function SubtractIngredients(name, row) {
     console.log("nothing to remove");
   }
   else {
-    console.log("possibly items to remove");
+    `possibly items to remove`
     shopPairs = getIngredients("Shopping List");
     for (const [number, unit, item] of ingredientPairs) {
       for (let i = 2; i <= shopPairs.length+1; i++) {
         const [num, un, it] = shopPairs[i-2];
         if (it == item) {
-          console.log("item is there", i, shopPairs.length+1);
+          let newNum = 0;
+          let newUnit = un;   
           if (un == unit) {
-            console.log("subtract same unit");
-            const newNum = Math.max(0,num-number*(totalServings/servings));
-            setCell(shoppingList, i, 1, newNum);
+            `subtract same unit`
+            newNum = Math.max(0,num-number*(totalServings/servings));
           }
           else {
-            console.log("subtract not the same unit");
+            `subtract not the same unit`
+            unitChange = convert(number, getConversionRate(unit, un));
+            newNum = num-unitChange*(totalServings/servings);
+
           }
+          const [newNumber, newUn] = getNewUnit(newNum, newUnit);
+          setCell(shoppingList, i, 1, newNumber);
+          setCell(shoppingList, i, 2, newUn); 
         }
       }
     }
@@ -188,34 +166,3 @@ function SubtractIngredients(name, row) {
     }
   }
 }
-
-function onEdit(e) {
-  if (!e) {
-    return;
-  }
-  const range = e.range;
-  const sheet = range.getSheet();
-
-  const isRightSheet = sheet.getName() === "Recipe List"
-  const isRightColumn = range.getColumn() === 1;
-
-  if (!isRightSheet || !isRightColumn) {
-    return;
-  }
-
-  const row = range.getRow();
-  const cell = sheet.getRange(row,2);
-  const name = cell.getValue();
-
-  if (range.getValue()) {
-    console.log("checked")
-    AddIngredients(name, row);
-  }
-  else {
-    console.log("unchecked")
-    sheet.getRange(range.getRow(),2);
-    SubtractIngredients(name, row);
-  }
-}
-
-
