@@ -106,7 +106,7 @@ function AddIngredients(name, row) {
   }
 }
 
-function SubtractIngredients(name, row) {
+function SubtractIngredients(name, row, oldValue=null) {
   `subtract ingredients`
   if (!name) {
     console.log("no recipe")
@@ -121,10 +121,21 @@ function SubtractIngredients(name, row) {
   if (!isNum) {
     servings = 1;
   }
-  const totalServings = getTotalServings(row);
-  const isNumber = typeof totalServings === 'number' && Number.isFinite(totalServings);
-  if (!isNumber) {
-    totalServings = servings;
+  let totalServings = getTotalServings(row);
+  if(!oldValue) {
+    const isNumber = typeof totalServings === 'number' && Number.isFinite(totalServings);
+    if (!isNumber) {
+      totalServings = servings;
+    }
+  }
+  else {
+    oldValue = Number(oldValue);
+    if (!Number.isFinite(oldValue)) {
+      totalServings = servings;
+    }
+    else {
+      totalServings = oldValue;
+    }
   }
   
   const lastRow = shoppingList.getLastRow();
