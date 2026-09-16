@@ -14,12 +14,15 @@ function onEdit(e) {
   const range = e.range;
   const sheet = range.getSheet();
   const row = range.getRow();
+  const sheetName = sheet.getName();
+  const newValue = range.getValue();
+  const column = range.getColumn();
 
-  if (sheet.getName() === "Recipe List") {
-    if (range.getColumn() === 1) {
+  if (sheetName === "Recipe List") {
+    if (column === 1) {
       const cell = sheet.getRange(row,2);
       const name = cell.getValue();
-      if (range.getValue()) {
+      if (newValue) {
         `checked`
         AddIngredients(name, row);
       }
@@ -29,26 +32,47 @@ function onEdit(e) {
         SubtractIngredients(name, row);
       }
     }
-    if (range.getColumn() === 3) {
+    if (column === 3) {
+      const cell = sheet.getRange(row,2);
+      const name = cell.getValue();
+      const oldValue = e.oldValue || 0;
+      const isNumber = typeof newValue === 'number' && Number.isFinite(newValue);
+      if (!isNumber) {
+        console.log('not a valid number');
+        range.setValue(oldValue);
+      }
       if (sheet.getRange(row,1).getValue()) {
         `checked`
-        const cell = sheet.getRange(row,2);
-        const name = cell.getValue();
-        const oldValue = e.oldValue || 0;
-        const newValue = range.getValue();
-        const isNumber = typeof newValue === 'number' && Number.isFinite(newValue);
-        if (!isNumber) {
-          console.log('not a valid number');
-          range.setValue(oldValue);
+        SubtractIngredients(name, row, oldValue);
+        AddIngredients(name,row);
+      }
+    }
+  }
+  if (sheetName === "Shopping List") {
+    if (row === 1) {
+      if (column === 6) {
+        if (newValue) {
+          clearCart();
+        }
+      }
+      else if (column === 8) {
+        if (newValue) {
+          undoClearCart();
         }
         else {
-          SubtractIngredients(name, row, oldValue);
-          AddIngredients(name,row);
+          shoppingList.getRange(1,8).setValue('TRUE');
         }
       }
     }
   }
-  if (sheet.getName() != "Recipe List" && range.getColumn() === 2) {
+  if (sheetName != "Shopping List" || row != 1 || column != 6) {
+    const backup = workbook.getSheetByName('Undo Clear Cart');
+    if (backup) {
+      workbook.deleteSheet(backup);
+      shoppingList.getRange(1,8).setValue('TRUE');
+    }
+  }
+  if ((sheetName != "Recipe List" || "Owned Items List") && column === 2 && row != 1) {
     const oldValue = e.oldValue || "";
     const unitCell = sheet.getRange(row,2);
     const newValue = unitCell.getValue();
