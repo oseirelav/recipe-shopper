@@ -18,6 +18,11 @@ function onEdit(e) {
   const newValue = range.getValue();
   const column = range.getColumn();
 
+  if (row === 1 && (sheetName.toLowerCase().includes("list") || column != 5) && range.isChecked() == null) {
+    range.setValue(e.oldValue);
+    return;
+  }
+
   if (sheetName === "Recipe List") {
     if (column === 1) {
       const cell = sheet.getRange(row,2);
@@ -152,6 +157,7 @@ function onEdit(e) {
     }
   }
   if (!sheetName.toLowerCase().includes("list")) {
+    const oldValue = e.oldValue || "";
     if (row === 1) {    
       if (column === 10) {
         if (newValue) {
@@ -182,7 +188,7 @@ function onEdit(e) {
       }
       else if (column === 5) {
         if (sheet.getRange(1,10).getValue()) { 
-          AddIngredients(sheet, sheetName, null, e.oldValue);
+          AddIngredients(sheet, sheetName, null, oldValue);
         }
       }
     }
