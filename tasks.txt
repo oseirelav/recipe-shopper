@@ -1,4 +1,7 @@
-- add editing servings functionality
 - add a list of things you already have at home
 - add checkbox to choose if you want to subtract the things you have at home
 - configure new spreadsheet once opened 
+- add alarm when important sheets are deleted
+- clear shopping list when you remove a recipe if it was checked...
+- show possible recipes you can make with what you have at home?
+- make it so if you delete the header, it gets replaced again

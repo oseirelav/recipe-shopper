@@ -24,12 +24,12 @@ function onEdit(e) {
       const name = cell.getValue();
       if (newValue) {
         `checked`
-        AddIngredients(name, row);
+        AddIngredients(shoppingList, name, row);
       }
       else {
         `unchecked`
         sheet.getRange(range.getRow(),2);
-        SubtractIngredients(name, row);
+        SubtractIngredients(shoppingList, name, row);
       }
     }
     else if (column === 2) {
@@ -99,8 +99,8 @@ function onEdit(e) {
       }
       if (sheet.getRange(row,1).getValue()) {
         `checked`
-        SubtractIngredients(name, row, oldValue);
-        AddIngredients(name,row);
+        SubtractIngredients(shoppingList, name, row, oldValue);
+        AddIngredients(shoppingList, name,row);
       }
     }
     else if (column === 4) {
@@ -178,6 +178,11 @@ function onEdit(e) {
         else {
           `unchecked`
           console.log("unchecked somehow");
+        }
+      }
+      else if (column === 5) {
+        if (sheet.getRange(1,10).getValue()) { 
+          AddIngredients(sheet, sheetName, null, e.oldValue);
         }
       }
     }
