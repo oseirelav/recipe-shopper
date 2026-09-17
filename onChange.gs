@@ -48,7 +48,7 @@ function detectSheetChanges(e) {
       console.log("null");
     }
   }
-  else if (e.changeType = "OTHER") {
+  else if (e.changeType === "OTHER") {
     const trackerSheet = workbook.getSheetByName("_System_Sheet_Names");
     if (!trackerSheet) {
       updateSheetNameMemory();
@@ -80,6 +80,38 @@ function detectSheetChanges(e) {
           }
         }
       }
+    }
+  }
+  else if (e.changeType === "REMOVE_GRID") {
+    console.log("in statement");
+    const trackerSheet = workbook.getSheetByName("_System_Sheet_Names");
+    if (!trackerSheet) {
+      updateSheetNameMemory();
+      return;
+    }
+    const oldData = trackerSheet.getDataRange().getValues();
+
+    let ids = [];
+    const oldMemory = {};
+    oldData.forEach(row => {
+      const id = row[0];
+      ids.push(row[0]);
+      const name = row[1];
+      oldMemory[id] = name;
+    });
+    console.log(oldMemory);
+    for (const sheet of sheets) {
+      const currentId = sheet.getSheetId();
+      if (ids.includes(currentId)) {
+        ids = ids.filter(item => item != currentId);
+      }
+    }
+    console.log(ids, ids[0], oldMemory[ids[0]], "testtttt");
+    const prevSheetName = oldMemory[ids[0]];
+    const rowToDelete = findRowWithValue(recipeList,2,prevSheetName);
+    if (rowToDelete != 0 && rowToDelete != 1) {
+      console.log(rowToDelete, "delete row");
+      recipeList.deleteRow(rowToDelete);
     }
   }
   updateSheetNameMemory();
