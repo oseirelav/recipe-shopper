@@ -40,8 +40,6 @@ function AddIngredients(name, row) {
     console.log("no recipe")
     return;
   }
-  const timestampCell = recipeList.getRange(2, 5);
-  timestampCell.setValue(new Date());
   const ingredientPairs = getIngredients(name);
 
   const servings = getNumServings(name);
@@ -112,8 +110,6 @@ function SubtractIngredients(name, row, oldValue=null) {
     console.log("no recipe")
     return;
   }
-  const timestampCell = recipeList.getRange(2, 5);
-  timestampCell.clearContent();
   const ingredientPairs = getIngredients(name);
   
   const servings = getNumServings(name);
