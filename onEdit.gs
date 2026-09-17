@@ -152,20 +152,32 @@ function onEdit(e) {
     }
   }
   if (!sheetName.toLowerCase().includes("list")) {
-    if (row === 1 && column === 8) {
-      if (newValue) {
-        `checked`
-        const newRow = getLastRowInColumn(recipeList,2)+1
-        const servings = sheet.getRange(1,5).getValue();
-        
-        recipeList.getRange(newRow, 2).setValue(sheetName);
-        recipeList.getRange(newRow, 3).setValue(servings);
+    if (row === 1) {    
+      if (column === 10) {
+        if (newValue) {
+          `checked`
+          const newRow = getLastRowInColumn(recipeList,2)+1
+          const servings = sheet.getRange(1,5).getValue();
+          
+          recipeList.getRange(newRow, 2).setValue(sheetName);
+          recipeList.getRange(newRow, 3).setValue(servings);
+        }
+        else {
+          `unchecked`
+          const newRow = findRowWithValue(recipeList,2, sheetName);
+          if (newRow != 0 && newRow != 1) {
+            recipeList.deleteRow(newRow);
+          }
+        }
       }
-      else {
-        `unchecked`
-        const newRow = findRowWithValue(recipeList,2, sheetName);
-        if (newRow != 0 && newRow != 1) {
-          recipeList.deleteRow(newRow);
+      else if (column === 8) {
+        if (newValue) {
+          `checked`
+          transferTabs("Recipe List",row,column);
+        }
+        else {
+          `unchecked`
+          console.log("unchecked somehow");
         }
       }
     }

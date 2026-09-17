@@ -33,9 +33,15 @@ function detectSheetChanges(e) {
       const index = newSheet.getIndex();
       const prevSheetName = getSheetByIndex(index-1).getName();
       if (prevSheetName && !prevSheetName.includes("List")) {
-        const newItems = [["#",	"Unit",	"Item",	"Serves:",	2,	"Recipe",	"Completed?"]]
+        const newItems = [["#",	"Unit",	"Item",	"Serves:",	0,	"Recipe",	"Go To Recipe List"]]
         newSheet.getRange(1,1,1,7).setValues(newItems);
+        newSheet.getRange("F:F").setWrapStrategy(SpreadsheetApp.WrapStrategy.OVERFLOW);
+        newSheet.setColumnWidth(7, 120);
         newSheet.getRange("H1:H1").insertCheckboxes();
+        newSheet.setColumnWidth(8, 50);
+        newSheet.getRange(1,9).setValue("Completed?")
+        newSheet.getRange("J1:J1").insertCheckboxes();
+        newSheet.setColumnWidth(10, 50);
       }
     }
     else {
@@ -62,11 +68,11 @@ function detectSheetChanges(e) {
       const oldName = oldMemory[id];
 
       if (oldName && oldName !== currentName) {
-        if (oldName.toLowerCase.includes("list")) {
+        if (oldName.toLowerCase().includes("list")) {
           sheet.setName(oldName);
           break;
         }
-        const names = recipeList.getRange(2,2,getLastRowInColum(recipeList,2)-1).getValues();
+        const names = recipeList.getRange(2,2,getLastRowInColumn(recipeList,2)-1).getValues();
         for (let i = 0; i < names.length; i++) {
           if (names[i] == oldName) {
             recipeList.getRange(i+2,2).setValue(currentName);

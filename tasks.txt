@@ -1,6 +1,4 @@
 - add editing servings functionality
-- add links to sheets if possible
-- add a way to quickly go back to recipe list or shopping list
 - add a way to remove recipes
 - add a list of things you already have at home
 - add checkbox to choose if you want to subtract the things you have at home
