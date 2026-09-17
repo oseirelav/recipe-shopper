@@ -6,8 +6,10 @@ function detectSheetChanges(e) {
   const sheets = workbook.getSheets();
   if (e.changeType === "INSERT_GRID") {
     const trackerSheet = workbook.getSheetByName("_System_Sheet_Names");
-    if (!trackerSheet) {
+    const dataTrackerSheet = workbook.getSheetByName("_System_Sheet_Data");
+    if (!trackerSheet || !dataTrackerSheet) {
       updateSheetNameMemory();
+      updateSheetMemory();
       return;
     }
     const oldData = trackerSheet.getDataRange().getValues();
@@ -43,6 +45,7 @@ function detectSheetChanges(e) {
         newSheet.getRange("J1:J1").insertCheckboxes();
         newSheet.setColumnWidth(10, 50);
       }
+      updateSheetAddition(newSheet.getSheetId());
     }
     else {
       console.log("null");
@@ -50,10 +53,13 @@ function detectSheetChanges(e) {
   }
   else if (e.changeType === "OTHER") {
     const trackerSheet = workbook.getSheetByName("_System_Sheet_Names");
-    if (!trackerSheet) {
+    const dataTrackerSheet = workbook.getSheetByName("_System_Sheet_Data");
+    if (!trackerSheet || !dataTrackerSheet) {
       updateSheetNameMemory();
+      updateSheetMemory();
       return;
     }
+    updateSheetMemory();
     const oldData = trackerSheet.getDataRange().getValues();
     const oldMemory = {};
 
@@ -83,36 +89,21 @@ function detectSheetChanges(e) {
     }
   }
   else if (e.changeType === "REMOVE_GRID") {
-    console.log("in statement");
     const trackerSheet = workbook.getSheetByName("_System_Sheet_Names");
-    if (!trackerSheet) {
+    const dataTrackerSheet = workbook.getSheetByName("_System_Sheet_Data");
+    if (!trackerSheet || !dataTrackerSheet) {
       updateSheetNameMemory();
+      updateSheetMemory();
       return;
     }
-    const oldData = trackerSheet.getDataRange().getValues();
-
-    let ids = [];
-    const oldMemory = {};
-    oldData.forEach(row => {
-      const id = row[0];
-      ids.push(row[0]);
-      const name = row[1];
-      oldMemory[id] = name;
-    });
-    console.log(oldMemory);
-    for (const sheet of sheets) {
-      const currentId = sheet.getSheetId();
-      if (ids.includes(currentId)) {
-        ids = ids.filter(item => item != currentId);
-      }
-    }
-    console.log(ids, ids[0], oldMemory[ids[0]], "testtttt");
-    const prevSheetName = oldMemory[ids[0]];
+    const [id, name] = findMissingId();
+    const prevSheetName = name;
     const rowToDelete = findRowWithValue(recipeList,2,prevSheetName);
     if (rowToDelete != 0 && rowToDelete != 1) {
       console.log(rowToDelete, "delete row");
       recipeList.deleteRow(rowToDelete);
     }
+    updateSheetDeletion(id);
   }
   updateSheetNameMemory();
 }

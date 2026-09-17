@@ -3,4 +3,6 @@
 - configure new spreadsheet once opened 
 - add alarm when important sheets are deleted
 - clear shopping list when you remove a recipe if it was checked...
+- fix sheet memory update for adding sheets
+- substitution for common items
 - show possible recipes you can make with what you have at home?
