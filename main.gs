@@ -32,7 +32,63 @@ function onEdit(e) {
         SubtractIngredients(name, row);
       }
     }
-    if (column === 3) {
+    else if (column === 2) {
+      const oldValue = e.oldValue || "";
+      
+      if (newValue === "") {
+        console.log('not a valid name');
+        range.setValue(oldValue);
+      }
+      else {
+        if (oldValue === "") {
+          let recipeSheet = workbook.getSheetByName(String(newValue));
+          if (!recipeSheet) {
+            workbook.insertSheet(String(newValue));
+          }
+          else {
+            let i = 1;
+            while(true) {
+              const newName = String(newValue) + " " + String(i);
+              const newSheet = workbook.getSheetByName(newName);
+              if (!newSheet) {
+                workbook.insertSheet(newName, workbook.getNumSheets());
+                range.setValue(newName);
+                break; 
+              }
+              else {
+                i++;
+              }
+            }
+          }
+        }
+        else {
+          console.log("else");
+          let newSheet = workbook.getSheetByName(oldValue);
+          if (!newSheet) {
+            workbook.insertSheet(oldValue,workbook.getNumSheets());
+            newSheet = workbook.getSheetByName(oldValue);
+          }
+          try {  
+            newSheet.setName(newValue);
+          } 
+          catch (error) {
+            let i = 1;
+            while(true) {
+              const newName = String(newValue) + " " + String(i);
+              try {
+                newSheet.setName(newName);
+                range.setValue(newName);
+                break;
+              }
+              catch (error) {
+                i++;
+              }
+            }
+          }
+        }
+      }
+    }
+    else if (column === 3) {
       const cell = sheet.getRange(row,2);
       const name = cell.getValue();
       const oldValue = e.oldValue || 0;
@@ -72,7 +128,7 @@ function onEdit(e) {
       shoppingList.getRange(1,8).setValue('TRUE');
     }
   }
-  if ((sheetName != "Recipe List" || "Owned Items List") && column === 2 && row != 1) {
+  if ((sheetName != "Recipe List" && sheetName != "Owned Items List") && column === 2 && row != 1) {
     const oldValue = e.oldValue || "";
     const unitCell = sheet.getRange(row,2);
     const newValue = unitCell.getValue();
