@@ -17,9 +17,10 @@ function onEdit(e) {
   const sheetName = sheet.getName();
   const newValue = range.getValue();
   const column = range.getColumn();
+  const oldValue = e.oldValue || "";
 
-  if (row === 1 && (sheetName.toLowerCase().includes("list") || column != 5) && range.isChecked() == null) {
-    range.setValue(e.oldValue);
+  if (row === 1 && oldValue != "" && (sheetName.toLowerCase().includes("list") || column != 5) && range.isChecked() == null) {
+    range.setValue(oldValue);
     return;
   }
 
@@ -38,7 +39,6 @@ function onEdit(e) {
       }
     }
     else if (column === 2) {
-      const oldValue = e.oldValue || "";
       
       if (newValue === "") {
         console.log('not a valid name');
@@ -96,11 +96,16 @@ function onEdit(e) {
     else if (column === 3) {
       const cell = sheet.getRange(row,2);
       const name = cell.getValue();
-      const oldValue = e.oldValue || 0;
       const isNumber = typeof newValue === 'number' && Number.isFinite(newValue);
       if (!isNumber) {
         console.log('not a valid number');
-        range.setValue(oldValue);
+        oldValue = Number(oldValue);
+        if (Number.isFinite(oldValue)) {
+          range.setValue(oldValue);
+        }
+        else {
+          range.setValue(0);
+        }
       }
       if (sheet.getRange(row,1).getValue()) {
         `checked`
@@ -140,7 +145,6 @@ function onEdit(e) {
     }
   }
   if ((sheetName != "Recipe List" && sheetName != "Owned Items List") && column === 2 && row != 1) {
-    const oldValue = e.oldValue || "";
     const unitCell = sheet.getRange(row,2);
     const newValue = unitCell.getValue();
     const numberCell = sheet.getRange(row,1);
@@ -157,7 +161,6 @@ function onEdit(e) {
     }
   }
   if (!sheetName.toLowerCase().includes("list")) {
-    const oldValue = e.oldValue || "";
     if (row === 1) {    
       if (column === 10) {
         if (newValue) {
@@ -187,8 +190,21 @@ function onEdit(e) {
         }
       }
       else if (column === 5) {
-        if (sheet.getRange(1,10).getValue()) { 
-          AddIngredients(sheet, sheetName, null, oldValue);
+        const isNumber = typeof newValue === 'number' && Number.isFinite(newValue);
+        if (!isNumber) {
+          console.log('not a valid number');
+          oldValue = Number(oldValue);
+          if (Number.isFinite(oldValue)) {
+            range.setValue(oldValue);
+          }
+          else {
+            range.setValue(0);
+          }
+        }
+        else {
+          if (sheet.getRange(1,10).getValue()) { 
+            AddIngredients(sheet, sheetName, null, oldValue);
+          }
         }
       }
     }
