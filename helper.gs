@@ -136,7 +136,8 @@ function updateSheetAddition(id) {
 }
 
 function updateSheetEdit(id) {
-
+  updateSheetDeletion(id);
+  updateSheetAddition(id);
 }
 
 function getSheetById(workbook,id) {

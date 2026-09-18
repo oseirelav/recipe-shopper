@@ -5,7 +5,7 @@ const small = ['bit','dash','pinch'];
 const units = [weight,volume,count,small];
 
 function equivalentUnits(unit1, unit2) {
-  return units.some(list => list.includes(unit1) && list.includes(unit2));
+  return units.some(list => list.includes(unit1.toLowerCase()) && list.includes(unit2.toLowerCase()));
 }
 
 function getWeightConversion(unit, newUnit) {

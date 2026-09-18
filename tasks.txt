@@ -3,6 +3,8 @@
 - configure new spreadsheet once opened 
 - add alarm when important sheets are deleted
 - clear shopping list when you remove a recipe if it was checked...
-- fix sheet memory update for adding sheets
 - substitution for common items
 - show possible recipes you can make with what you have at home?
+- fix what happens when you have serving size 0 and add to shopping cart (div by 0 issue)
+- figure out why backup sheet keeps adding recipe list over and over again
+- if clear cart also uncheck recipe list items

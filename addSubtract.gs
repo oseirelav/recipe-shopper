@@ -1,5 +1,15 @@
 function getNumServings(name) {
   `get # servings`
+  if (!name) {
+    const dataTrackerSheet = workbook.getSheetByName("_System_Sheet_Data");
+    const lastRow = dataTrackerSheet.getLastRow();
+    for (let i = 1; i <= lastRow; i++) {
+      if (dataTrackerSheet.getRange(i,1).getValue() === -1) {
+        return dataTrackerSheet.getRange(i,6).getValue();
+      }
+    }
+    return -1;
+  }
   const recipe = workbook.getSheetByName(name);
   const servingRange = recipe.getRange(1,5);
   const servings = servingRange.getValue();
@@ -15,7 +25,48 @@ function getTotalServings(row) {
 
 function getIngredients(name) {
   `get ingredients`
+  if (!name) {
+    const dataTrackerSheet = workbook.getSheetByName("_System_Sheet_Data");
+    const lastRow = dataTrackerSheet.getLastRow();
+    for (let i = 1; i <= lastRow; i++) {
+      if (dataTrackerSheet.getRange(i,1).getValue() === -1) {
+        const startRow = i;
+        let rowCount = 1;
+        if (startRow != 0) {
+          const numRows = dataTrackerSheet.getLastRow()-startRow
+          if (numRows >= 1) {
+            const data = dataTrackerSheet.getRange(startRow+1,1, dataTrackerSheet.getLastRow()-startRow).getValues();
+            for (const row of data) {
+              const cellValue = row[0];
+              if (cellValue === "") {
+                rowCount++;
+              }
+              else {
+                break;
+              }
+            } 
+          }
+        }
+        const amountRange = dataTrackerSheet.getRange(startRow,2,rowCount);
+        const unitRange = dataTrackerSheet.getRange(startRow,3,rowCount);
+        const itemRange = dataTrackerSheet.getRange(startRow,4,rowCount);
+        const rawAmountData = amountRange.getValues();
+        const rawUnitData = unitRange.getValues();
+        const rawItemData = itemRange.getValues();
+        const amountList = rawAmountData.flat().filter(item => item !== "");
+        const unitList = rawUnitData.flat().filter(item => item !== "");
+        const itemList = rawItemData.flat().filter(item => item !== "");
+        const paired = amountList.map((element, index) => [element, unitList[index], itemList[index]]);
+        return paired;
+      }
+    }
+    return;
+  }
   const recipe = workbook.getSheetByName(name);
+  if (!recipe) {
+    console.log("name");
+    return;
+  }
   const lastRow = recipe.getLastRow();
   if (lastRow < 2) {
     console.log("no ingredients listed")
@@ -38,7 +89,7 @@ function AddIngredients(sheet, name, row, oldValue = null) {
   `add ingredients`
   if (!name) {
     console.log("no recipe")
-    return;
+    return -1;
   }
   const ingredientPairs = getIngredients(name);
 
@@ -56,6 +107,9 @@ function AddIngredients(sheet, name, row, oldValue = null) {
       servings = oldValue;
     }
   }
+  if (servings === 0) {
+    return -1;
+  }
   const isNum = typeof servings === 'number' && Number.isFinite(servings);
   if (!isNum) {
     servings = 1;
@@ -64,7 +118,6 @@ function AddIngredients(sheet, name, row, oldValue = null) {
   if (!isNumber) {
     totalServings = servings;
   }
-  console.log(servings, totalServings, name, oldValue);
   const lastRow = sheet.getLastRow();
   let nextRow = lastRow + 1;
   if (lastRow < 2) {
@@ -76,6 +129,7 @@ function AddIngredients(sheet, name, row, oldValue = null) {
       setCell(sheet, i, 2, newUnit);
       setCell(sheet, i, 3, item);
       i++;
+      console.log(number*(totalServings/servings), unit, newNum,newUnit,item, "list empty")
     }
   }
   else {
@@ -132,14 +186,12 @@ function AddIngredients(sheet, name, row, oldValue = null) {
 
 function SubtractIngredients(sheet, name, row, oldValue=null) {
   `subtract ingredients`
-  if (!name) {
-    console.log("no recipe")
-    return;
-  }
   const ingredientPairs = getIngredients(name);
-  
   const servings = getNumServings(name);
   const isNum = typeof servings === 'number' && Number.isFinite(servings);
+  if (servings === 0) {
+    return -1;
+  }
   if (!isNum) {
     servings = 1;
   }
@@ -159,6 +211,7 @@ function SubtractIngredients(sheet, name, row, oldValue=null) {
       totalServings = oldValue;
     }
   }
+  console.log(servings, totalServings, "???");
   
   const lastRow = sheet.getLastRow();
   if (lastRow < 2) {
@@ -166,7 +219,8 @@ function SubtractIngredients(sheet, name, row, oldValue=null) {
   }
   else {
     `possibly items to remove`
-    shopPairs = getIngredients(sheet.getName());
+    const shopPairs = getIngredients(sheet.getName());
+    console.log(shopPairs);
     for (const [number, unit, item] of ingredientPairs) {
       for (let i = 2; i <= shopPairs.length+1; i++) {
         const [num, un, it] = shopPairs[i-2];

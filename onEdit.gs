@@ -30,12 +30,18 @@ function onEdit(e) {
       const name = cell.getValue();
       if (newValue) {
         `checked`
-        AddIngredients(shoppingList, name, row);
+        const success = AddIngredients(shoppingList, name, row);
+        if (success === -1) {
+          sheet.getRange(range.getRow(),1).setValue('FALSE');
+        }
       }
       else {
         `unchecked`
         sheet.getRange(range.getRow(),2);
-        SubtractIngredients(shoppingList, name, row);
+        const success = SubtractIngredients(shoppingList, name, row);
+        if (success === -1) {
+          sheet.getRange(range.getRow(),1).setValue('TRUE');
+        }
       }
     }
     else if (column === 2) {
@@ -209,4 +215,5 @@ function onEdit(e) {
       }
     }
   }
+  updateSheetEdit(sheet.getSheetId());
 }
