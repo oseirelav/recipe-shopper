@@ -71,6 +71,20 @@ function onEdit(e) {
               }
             }
           }
+          const newSheet = workbook.getSheetByName(range.getValue());
+          newSheet.setFrozenRows(1);
+          const firstRow = newSheet.getRange("1:1");
+          firstRow.setBackground("#cfe2f3");
+          firstRow.setFontWeight("bold");
+          const newItems = [["#",	"Unit",	"Item",	"Serves:",	0,	"Recipe",	"Go To Recipe List"]]
+          newSheet.getRange(1,1,1,7).setValues(newItems);
+          newSheet.getRange("F:F").setWrapStrategy(SpreadsheetApp.WrapStrategy.OVERFLOW);
+          newSheet.setColumnWidth(7, 120);
+          newSheet.getRange("H1:H1").insertCheckboxes();
+          newSheet.setColumnWidth(8, 50);
+          newSheet.getRange(1,9).setValue("Completed?")
+          newSheet.getRange("J1:J1").insertCheckboxes();
+          newSheet.setColumnWidth(10, 50);
         }
         else {
           console.log("else");
