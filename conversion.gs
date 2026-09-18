@@ -398,7 +398,7 @@ function getNewUnit(number, unit) {
   newUnit = ""
   switch(true) {
     case count.includes(unit) || small.includes(unit):
-      return (number,unit);
+      return [number,unit];
     case weight.includes(unit):
       newUnit = getNewWeightUnit(number, unit);
       break;
