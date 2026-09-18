@@ -54,7 +54,7 @@ function onEdit(e) {
         if (oldValue === "") {
           let recipeSheet = workbook.getSheetByName(String(newValue));
           if (!recipeSheet) {
-            workbook.insertSheet(String(newValue));
+            workbook.insertSheet(String(newValue),workbook.getNumSheets());
           }
           else {
             let i = 1;

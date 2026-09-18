@@ -101,7 +101,9 @@ function detectSheetChanges(e) {
     const rowToDelete = findRowWithValue(recipeList,2,prevSheetName);
     if (rowToDelete != 0 && rowToDelete != 1) {
       dataTrackerSheet.getRange(findRowWithValue(dataTrackerSheet,1,id),1).setValue(-1);
-      SubtractIngredients(shoppingList, null, rowToDelete);
+      if (recipeList.getRange(rowToDelete,1)) {
+        SubtractIngredients(shoppingList, null, rowToDelete);
+      }
       recipeList.deleteRow(rowToDelete);
       updateSheetDeletion(-1);
     }

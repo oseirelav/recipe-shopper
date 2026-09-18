@@ -6,3 +6,4 @@
 - show possible recipes you can make with what you have at home?
 - figure out why backup sheet keeps adding recipe list over and over again
 - if clear cart also uncheck recipe list items
+- figure out how to speed up delete spreadsheet function
