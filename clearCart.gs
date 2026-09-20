@@ -19,6 +19,12 @@ function clearCart() {
   }
   shoppingList.deleteRows(2,lastRow);
   shoppingList.getRange(1,8).setValue('FALSE');
+  const numRows = recipeList.getLastRow()-1;
+  const values = [];
+  for (let i = 0; i < numRows; i++) {
+    values.push(['FALSE']);
+  }
+  recipeList.getRange(2,1,numRows).setValues(values);
 }
 
 function undoClearCart() {
