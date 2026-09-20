@@ -1,7 +1,6 @@
 - add a list of things you already have at home
 - add checkbox to choose if you want to subtract the things you have at home
 - configure new spreadsheet once opened 
-- add alarm when important sheets are deleted
 - substitution for common items
 - show possible recipes you can make with what you have at home?
 - figure out issue with updateSheetEdit where recipeList keeps getting added to sheet memory
