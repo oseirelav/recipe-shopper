@@ -96,17 +96,78 @@ function detectSheetChanges(e) {
       updateSheetMemory();
       return;
     }
-    const [id, name] = findMissingId();
-    const prevSheetName = name;
-    const rowToDelete = findRowWithValue(recipeList,2,prevSheetName);
-    if (rowToDelete != 0 && rowToDelete != 1) {
-      console.log("test");
-      dataTrackerSheet.getRange(findRowWithValue(dataTrackerSheet,1,id),1).setValue(-1);
-      if (recipeList.getRange(rowToDelete,1)) {
-        SubtractIngredients(shoppingList, null, rowToDelete);
+    const [id, name] = findMissingId(); 
+    if (name.toLowerCase().includes("list")) {
+      const startRow = findRowWithValue(dataTrackerSheet,1,id);
+      if (startRow != 0) {
+        let rowCount = 1;
+        const numRows = dataTrackerSheet.getLastRow()-startRow
+        if (numRows >= 1) {
+          const data = dataTrackerSheet.getRange(startRow+1,1, dataTrackerSheet.getLastRow()-startRow).getValues();
+          for (const row of data) {
+            const cellValue = row[0];
+            if (cellValue === "") {
+              rowCount++;
+            }
+            else {
+              break;
+            }
+          } 
+        }
+        let index = 0;
+        switch(name) {
+          case 'Recipe List':
+            index = 2;
+            break;
+          case 'Shopping List':
+            index = 3;
+            break;
+          case 'Owned Items List':
+            index = 4;
+            break;
+          default:
+            break;
+        }
+        workbook.insertSheet(name,index);
+        const newSheet = workbook.getSheetByName(name);
+        const values = dataTrackerSheet.getRange(startRow,2,rowCount,dataTrackerSheet.getLastColumn()).getValues();
+        console.log(values);
+        newSheet.setFrozenRows(1);
+        const firstRow = newSheet.getRange("1:1");
+        firstRow.setBackground("#cfe2f3");
+        firstRow.setFontWeight("bold");
+        switch(name) {
+          case 'Recipe List':
+            newSheet.getRange("A2:A").insertCheckboxes();
+            newSheet.getRange("D2:D").insertCheckboxes();
+            break;
+          case 'Shopping List':
+            newSheet.getRange(1,5).insertCheckboxes();
+            newSheet.getRange(1,7).insertCheckboxes();
+            newSheet.getRange(1,9).insertCheckboxes();
+            break;
+          case 'Owned Items List':
+            newSheet.getRange(1,6).insertCheckboxes();
+            newSheet.getRange(1,8).insertCheckboxes();
+            break;
+          default: 
+            break;
+        }
+        newSheet.getRange(1,1,values.length,values[0].length).setValues(values);
+        updateSheetAddition(newSheet.getSheetId())
+        dataTrackerSheet.deleteRows(startRow, rowCount);
       }
-      recipeList.deleteRow(rowToDelete);
-      updateSheetDeletion(-1);
+    }
+    else {
+      const rowToDelete = findRowWithValue(recipeList,2,name);
+      if (rowToDelete != 0 && rowToDelete != 1) {
+        dataTrackerSheet.getRange(findRowWithValue(dataTrackerSheet,1,id),1).setValue(-1);
+        if (recipeList.getRange(rowToDelete,1)) {
+          SubtractIngredients(shoppingList, null, rowToDelete);
+        }
+        recipeList.deleteRow(rowToDelete);
+        updateSheetDeletion(-1);
+      }
     }
   }
   updateSheetNameMemory();
