@@ -53,7 +53,7 @@ function updateSheetMemory() {
   const data = [];
 
   sheets.forEach(sheet => {
-    if (sheet.getName() != "_System_Sheet_Data") {
+    if (!sheet.getName().includes("_System") && sheet.getName() != "Recipe List") {
       data.push([sheet.getSheetId(), sheet.getDataRange().getValues()]);
     }
   })

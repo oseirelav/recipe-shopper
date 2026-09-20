@@ -4,5 +4,3 @@
 - add alarm when important sheets are deleted
 - substitution for common items
 - show possible recipes you can make with what you have at home?
-- figure out why backup sheet keeps adding recipe list over and over again
-- figure out how to speed up delete spreadsheet function

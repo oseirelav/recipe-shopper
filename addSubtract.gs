@@ -181,7 +181,7 @@ function AddIngredients(sheet, name, row, oldValue = null) {
 function SubtractIngredients(sheet, name, row, oldValue=null) {
   `subtract ingredients`
   const ingredientPairs = getIngredients(name);
-  const servings = getNumServings(name);
+  let servings = getNumServings(name);
   const isNum = typeof servings === 'number' && Number.isFinite(servings);
   if (servings === 0) {
     return -1;
