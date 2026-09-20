@@ -185,10 +185,12 @@ function onEdit(e) {
       if (column === 10) {
         if (newValue) {
           `checked`
-          const newRow = getLastRowInColumn(recipeList,2)+1
+          let newRow = findRowWithValue(recipeList,2,sheetName);
+          if (newRow === 0) {
+            newRow = getLastRowInColumn(recipeList,2)+1;
+            recipeList.getRange(newRow, 2).setValue(sheetName);
+          }
           const servings = sheet.getRange(1,5).getValue();
-          
-          recipeList.getRange(newRow, 2).setValue(sheetName);
           recipeList.getRange(newRow, 3).setValue(servings);
         }
         else {
