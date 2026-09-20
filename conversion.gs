@@ -394,7 +394,6 @@ function getNewVolumeUnit(number, unit) {
 
 function getNewUnit(number, unit) {
   `choose conversion`
-  console.log(number);
   newUnit = ""
   switch(true) {
     case count.includes(unit) || small.includes(unit):

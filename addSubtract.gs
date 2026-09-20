@@ -103,7 +103,6 @@ function AddIngredients(sheet, name, row, oldValue = null) {
     totalServings = getNumServings(name);
     oldValue = Number(oldValue);
     if (oldValue != 0) {
-      console.log("test");
       servings = oldValue;
     }
   }
@@ -129,12 +128,10 @@ function AddIngredients(sheet, name, row, oldValue = null) {
       setCell(sheet, i, 2, newUnit);
       setCell(sheet, i, 3, item);
       i++;
-      console.log(number*(totalServings/servings), unit, newNum,newUnit,item, "list empty")
     }
   }
   else {
     `list not empty`
-    console.log(sheet.getName(), "hello");
     shopPairs = getIngredients(sheet.getName());
     for (const [number, unit, item] of ingredientPairs) {
       let add = true;
@@ -146,7 +143,6 @@ function AddIngredients(sheet, name, row, oldValue = null) {
           let newUnit = un;   
           if (un == unit) {
             `add same unit`
-            console.log(sheet.getName(), "same");
             if (sheet === shoppingList) {
               newNum = num+number*(totalServings/servings);
             }
@@ -156,7 +152,6 @@ function AddIngredients(sheet, name, row, oldValue = null) {
           }
           else {
             `add not the same unit`
-            console.log(sheet.getName(), "not same")
             unitChange = convert(number, getConversionRate(unit, un));
             if (sheet === shoppingList) {
               newNum = num+unitChange*(totalServings/servings)
@@ -169,7 +164,6 @@ function AddIngredients(sheet, name, row, oldValue = null) {
           setCell(sheet, i, 1, newNumber);
           setCell(sheet, i, 2, newUn);
           add = false;
-          console.log(newNumber, newUn, newNum, newUnit);
         }
       }
       if (add) {
@@ -211,7 +205,6 @@ function SubtractIngredients(sheet, name, row, oldValue=null) {
       totalServings = oldValue;
     }
   }
-  console.log(servings, totalServings, "???");
   
   const lastRow = sheet.getLastRow();
   if (lastRow < 2) {
@@ -220,7 +213,6 @@ function SubtractIngredients(sheet, name, row, oldValue=null) {
   else {
     `possibly items to remove`
     const shopPairs = getIngredients(sheet.getName());
-    console.log(shopPairs);
     for (const [number, unit, item] of ingredientPairs) {
       for (let i = 2; i <= shopPairs.length+1; i++) {
         const [num, un, it] = shopPairs[i-2];

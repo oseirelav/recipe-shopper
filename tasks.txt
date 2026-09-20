@@ -6,3 +6,4 @@
 - show possible recipes you can make with what you have at home?
 - figure out why backup sheet keeps adding recipe list over and over again
 - figure out how to speed up delete spreadsheet function
+- fix issue with creating new sheet from recipe list and then pressing complete duplicating the name

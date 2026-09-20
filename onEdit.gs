@@ -44,7 +44,7 @@ function onEdit(e) {
         }
       }
     }
-    else if (column === 2) {
+    else if (column === 2 && row != 1) {
       
       if (newValue === "") {
         console.log('not a valid name');
@@ -142,26 +142,26 @@ function onEdit(e) {
   }
   if (sheetName === "Shopping List") {
     if (row === 1) {
-      if (column === 6) {
+      if (column === 7) {
         if (newValue) {
           clearCart();
         }
       }
-      else if (column === 8) {
+      else if (column === 9) {
         if (newValue) {
           undoClearCart();
         }
         else {
-          shoppingList.getRange(1,8).setValue('TRUE');
+          shoppingList.getRange(1,9).setValue('TRUE');
         }
       }
     }
   }
-  if (sheetName != "Shopping List" || row != 1 || column != 6) {
+  if (sheetName != "Shopping List" || row != 1 || column != 7) {
     const backup = workbook.getSheetByName('Undo Clear Cart');
     if (backup) {
       workbook.deleteSheet(backup);
-      shoppingList.getRange(1,8).setValue('TRUE');
+      shoppingList.getRange(1,9).setValue('TRUE');
     }
   }
   if ((sheetName != "Recipe List" && sheetName != "Owned Items List") && column === 2 && row != 1) {

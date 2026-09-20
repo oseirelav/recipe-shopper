@@ -132,7 +132,6 @@ function updateSheetAddition(id) {
   const startRow = dataTrackerSheet.getLastRow()+1;
   dataTrackerSheet.getRange(startRow,1).setValue(id);
   dataTrackerSheet.getRange(startRow,2, data.length,data[0].length).setValues(data);
-  console.log("testing", startRow, data);
 }
 
 function updateSheetEdit(id) {
