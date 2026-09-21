@@ -28,24 +28,29 @@ function detectSheetChanges(e) {
     }
 
     if (newSheet != null) {
-      newSheet.setFrozenRows(1);
-      const firstRow = newSheet.getRange("1:1");
-      firstRow.setBackground("#cfe2f3");
-      firstRow.setFontWeight("bold");
-      const index = newSheet.getIndex();
-      const prevSheetName = getSheetByIndex(index-1).getName();
-      if (prevSheetName && !prevSheetName.includes("List")) {
-        const newItems = [["#",	"Unit",	"Item",	"Serves:",	0,	"Recipe",	"Go To Recipe List"]]
-        newSheet.getRange(1,1,1,7).setValues(newItems);
-        newSheet.getRange("F:F").setWrapStrategy(SpreadsheetApp.WrapStrategy.OVERFLOW);
-        newSheet.setColumnWidth(7, 120);
-        newSheet.getRange("H1:H1").insertCheckboxes();
-        newSheet.setColumnWidth(8, 50);
-        newSheet.getRange(1,9).setValue("Completed?")
-        newSheet.getRange("J1:J1").insertCheckboxes();
-        newSheet.setColumnWidth(10, 50);
+      try {
+        newSheet.setFrozenRows(1);
+        const firstRow = newSheet.getRange("1:1");
+        firstRow.setBackground("#cfe2f3");
+        firstRow.setFontWeight("bold");
+        const index = newSheet.getIndex();
+        const prevSheetName = getSheetByIndex(index-1).getName();
+        if (prevSheetName && !prevSheetName.includes("List")) {
+          const newItems = [["#",	"Unit",	"Item",	"Serves:",	0,	"Recipe",	"Go To Recipe List"]]
+          newSheet.getRange(1,1,1,7).setValues(newItems);
+          newSheet.getRange("F:F").setWrapStrategy(SpreadsheetApp.WrapStrategy.OVERFLOW);
+          newSheet.setColumnWidth(7, 120);
+          newSheet.getRange("H1:H1").insertCheckboxes();
+          newSheet.setColumnWidth(8, 50);
+          newSheet.getRange(1,9).setValue("Completed?")
+          newSheet.getRange("J1:J1").insertCheckboxes();
+          newSheet.setColumnWidth(10, 50);
+        }
+        updateSheetAddition(newSheet.getSheetId());
       }
-      updateSheetAddition(newSheet.getSheetId());
+      catch (error) {
+        console.log(error);
+      }
     }
     else {
       console.log("null");
@@ -81,6 +86,10 @@ function detectSheetChanges(e) {
         const names = recipeList.getRange(2,2,getLastRowInColumn(recipeList,2)-1).getValues();
         for (let i = 0; i < names.length; i++) {
           if (names[i] == oldName) {
+            const currentMaxRows = recipeList.getMaxRows();
+            if (i+2 > currentMaxRows) {
+              recipeList.insertRowsAfter(currentMaxRows,1000);
+            }
             recipeList.getRange(i+2,2).setValue(currentName);
             break;
           }
@@ -148,8 +157,8 @@ function detectSheetChanges(e) {
             newSheet.setColumnWidth(4,150);
             break;
           case 'Owned Items List':
-            newSheet.getRange(1,6).insertCheckboxes();
-            newSheet.getRange(1,8).insertCheckboxes();
+            newSheet.getRange(1,7).insertCheckboxes();
+            newSheet.getRange(1,9).insertCheckboxes();
             break;
           default: 
             break;
@@ -157,6 +166,10 @@ function detectSheetChanges(e) {
         const numberRows = values.length;
         const numberCols = values[0].length;
         if (numberRows > 0 && numberCols > 0) {
+          const currentMaxRows = newSheet.getMaxRows();
+          if (numberRows > currentMaxRows) {
+            newSheet.insertRowsAfter(currentMaxRows,1000);
+          }
           newSheet.getRange(1,1,numberRows,numberCols).setValues(values);
         }
         updateSheetAddition(newSheet.getSheetId())
@@ -166,7 +179,10 @@ function detectSheetChanges(e) {
     else {
       const rowToDelete = findRowWithValue(recipeList,2,name);
       if (rowToDelete != 0 && rowToDelete != 1) {
-        dataTrackerSheet.getRange(findRowWithValue(dataTrackerSheet,1,id),1).setValue(-1);
+        const rowWithId = findRowWithValue(dataTrackerSheet,1,id);
+        if (rowWithId >= 1) {
+          dataTrackerSheet.getRange(rowWithId,1).setValue(-1);
+        }
         if (recipeList.getRange(rowToDelete,1)) {
           SubtractIngredients(shoppingList, null, rowToDelete);
         }

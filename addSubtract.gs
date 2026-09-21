@@ -181,9 +181,13 @@ function AddIngredients(sheet, name, row, oldValue = null) {
 function SubtractIngredients(sheet, name, row=null, oldValue=null) {
   `subtract ingredients`
   const ingredientPairs = getIngredients(name);
+  if (ingredientPairs === null) {
+    console.log(null);
+    return;
+  }
   let servings = 1;
   let totalServings = 1;
-  if (name != 'Owned Items List') {
+  if (name != 'Owned Items List' && !name.includes("_System")) {
     servings = getNumServings(name);
     totalServings = getTotalServings(row);
   }

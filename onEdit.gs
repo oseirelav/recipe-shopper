@@ -3,6 +3,10 @@ const recipeList = workbook.getSheetByName("Recipe List");
 const shoppingList = workbook.getSheetByName("Shopping List");
 
 function setCell(sheet, row, column, value) {
+  const currentMaxRows = sheet.getMaxRows();
+  if (row > currentMaxRows) {
+    sheet.insertRowsAfter(currentMaxRows,1000);
+  }
   const cell = sheet.getRange(row, column);
   cell.setValue(value);
 }
@@ -18,6 +22,7 @@ function onEdit(e) {
   const newValue = range.getValue();
   const column = range.getColumn();
   const oldValue = e.oldValue || "";
+  const currentMaxRows = sheet.getMaxRows();
 
   if (row === 1 && oldValue != "" && (sheetName.toLowerCase().includes("list") || column != 5) && range.isChecked() == null) {
     range.setValue(oldValue);
@@ -32,20 +37,26 @@ function onEdit(e) {
         `checked`
         const success = AddIngredients(shoppingList, name, row);
         if (success === -1) {
-          sheet.getRange(range.getRow(),1).setValue('FALSE');
+          if (row > currentMaxRows) {
+            sheet.insertRowsAfter(currentMaxRows,1000);
+          }
+          sheet.getRange(row,1).setValue('FALSE');
         }
       }
       else {
         `unchecked`
-        sheet.getRange(range.getRow(),2);
         const success = SubtractIngredients(shoppingList, name, row);
         if (success === -1) {
-          sheet.getRange(range.getRow(),1).setValue('TRUE');
+          if (row > currentMaxRows) {
+            sheet.insertRowsAfter(currentMaxRows,1000);
+          }
+          sheet.getRange(row,1).setValue('TRUE');
         }
       }
     }
     else if (column === 2 && row != 1) {
-      
+      recipeList.getRange(row,1).insertCheckboxes();
+      recipeList.getRange(row,4).insertCheckboxes();
       if (newValue === "") {
         console.log('not a valid name');
         range.setValue(oldValue);
@@ -147,21 +158,7 @@ function onEdit(e) {
           SubtractIngredients(shoppingList, 'Owned Items List');
         }
         else {
-          const lastRow = shoppingList.getLastRow();
-          if (lastRow >= 2) {
-            shoppingList.deleteRows(2,lastRow-1);
-          }          
-          const lastRowInColumn = getLastRowInColumn(recipeList, 2);
-          const checked = recipeList.getRange(2,1,lastRowInColumn-1).getValues();
-          const checkedRows = [];
-          for (let i = 2; i < lastRowInColumn+1; i++) {
-            if (checked[i-2][0]) {
-              checkedRows.push(i);
-            }
-          }
-          for (let i = 0; i < checkedRows.length; i++) {
-            AddIngredients(shoppingList,recipeList.getRange(checkedRows[i],2).getValue(),checkedRows[i]);
-          }
+          resetShoppingList()
         }
       }
       else if (column === 7) {
@@ -180,16 +177,47 @@ function onEdit(e) {
     }
   }
   if (sheetName === "Owned Items List") {
-
+    if (row === 1) {
+      if (column === 7) {
+        if (newValue) {
+          clearCart(sheet);
+        }
+      }
+      else if (column === 9) {
+        if (newValue) {
+          undoClearCart(sheet);
+        }
+      }
+    }
   }
   if (sheetName != "Shopping List" || row != 1 || column != 7) {
     const backup = workbook.getSheetByName('_System_Cart_Data');
     if (backup) {
-      workbook.deleteSheet(backup);
+      try {
+        workbook.deleteSheet(backup);
+      }
+      catch (error) {
+        console.log(error);
+      }
       shoppingList.getRange(1,9).setValue('TRUE');
     }
   }
+  if (sheetName != "Owned Items List" || row != 1 || column != 7) {
+    const backup = workbook.getSheetByName('_System_Owned_Data');
+    if (backup) {
+      try {
+        workbook.deleteSheet(backup);
+      }
+      catch (error) {
+        console.log(error);
+      }
+      workbook.getSheetByName("Owned Items List").getRange(1,9).setValue(true);
+    }
+  }
   if ((sheetName != "Recipe List" && sheetName != "Owned Items List") && column === 2 && row != 1) {
+    if (row > currentMaxRows) {
+      sheet.insertRowsAfter(currentMaxRows,1000);
+    }
     const unitCell = sheet.getRange(row,2);
     const newValue = unitCell.getValue();
     const numberCell = sheet.getRange(row,1);
@@ -213,7 +241,13 @@ function onEdit(e) {
           let newRow = findRowWithValue(recipeList,2,sheetName);
           if (newRow === 0) {
             newRow = getLastRowInColumn(recipeList,2)+1;
+            if (newRow > currentMaxRows) {
+              sheet.insertRowsAfter(currentMaxRows,1000);
+            }
             recipeList.getRange(newRow, 2).setValue(sheetName);
+          }
+          if (newRow > currentMaxRows) {
+            sheet.insertRowsAfter(currentMaxRows,1000);
           }
           const servings = sheet.getRange(1,5).getValue();
           recipeList.getRange(newRow, 3).setValue(servings);

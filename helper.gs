@@ -42,6 +42,10 @@ function updateSheetNameMemory() {
   trackerSheet.clear();
   const numRows = data.length;
   if (numRows > 0) {
+    const currentMaxRows = trackerSheet.getMaxRows();
+    if (numRows > currentMaxRows) {
+      trackerSheet.insertRowsAfter(currentMaxRows,1000);
+    }
     trackerSheet.getRange(1,1, numRows,2).setValues(data);
   }
 }
@@ -56,13 +60,17 @@ function updateSheetMemory() {
   const data = [];
 
   sheets.forEach(sheet => {
-    if (!sheet.getName().includes("_System") && !sheet.getName() != "Undo Clear Cart") {
+    if (!sheet.getName().includes("_System")) {
       data.push([sheet.getSheetId(), sheet.getDataRange().getValues()]);
     }
   })
   trackerSheet.clear();
   let row = 1;
   for (const [id, sheetData] of data) {
+    const currentMaxRows = trackerSheet.getMaxRows();
+    if (row > currentMaxRows) {
+      trackerSheet.insertRowsAfter(currentMaxRows,1000);
+    }
     trackerSheet.getRange(row,1).setValue(id);
     if (getSheetById(workbook,id).getLastRow() === 0) {
       break;
@@ -70,6 +78,9 @@ function updateSheetMemory() {
     const numRows = sheetData.length;
     const numCols = sheetData[0].length;
     if (numRows > 0 && numCols > 0) {
+      if (numRows > currentMaxRows) {
+        trackerSheet.insertRowsAfter(currentMaxRows,1000);
+      }
       trackerSheet.getRange(row,2, numRows,numCols).setValues(sheetData);
       row += sheetData.length;
     }
@@ -122,7 +133,6 @@ function updateSheetDeletion(id) {
         }
       } 
     }
-    console.log(startRow,deleteCount);
     dataTrackerSheet.deleteRows(startRow, deleteCount);
   }
 }
@@ -142,10 +152,17 @@ function updateSheetAddition(id) {
   }
 
   const startRow = dataTrackerSheet.getLastRow()+1;
+  const currentMaxRows = dataTrackerSheet.getMaxRows();
+  if (startRow > currentMaxRows) {
+    dataTrackerSheet.insertRowsAfter(currentMaxRows,1000);
+  }
   dataTrackerSheet.getRange(startRow,1).setValue(id);
   const numRows = data.length;
   const numCols = data[0].length;
   if (numRows > 0 && numCols > 0) {
+    if (numRows > currentMaxRows) {
+      dataTrackerSheet.insertRowsAfter(currentMaxRows,1000);
+    }
     dataTrackerSheet.getRange(startRow,2, numRows, numCols).setValues(data);
   }
 }
@@ -175,6 +192,10 @@ function updateShopMemory() {
   const numRows = shopPairs.length
   const numCols = shopPairs[0].length
   if (numRows > 0 && numCols > 0) {
+    const currentMaxRows = trackerSheet.getMaxRows();
+    if (shopPairs.length+1 > currentMaxRows) {
+      trackerSheet.insertRowsAfter(currentMaxRows,1000);
+    }
     trackerSheet.getRange(2,1,shopPairs.length,shopPairs[0].length).setValues(shopPairs);
   }
 }
@@ -198,4 +219,22 @@ function subtractShopMemory(name) {
     return;
   }
   SubtractIngredients(sheet,name,row);
+}
+
+function resetShoppingList() {
+  const lastRow = shoppingList.getLastRow();
+  if (lastRow >= 2) {
+    shoppingList.deleteRows(2,lastRow-1);
+  }          
+  const lastRowInColumn = getLastRowInColumn(recipeList, 2);
+  const checked = recipeList.getRange(2,1,lastRowInColumn-1).getValues();
+  const checkedRows = [];
+  for (let i = 2; i < lastRowInColumn+1; i++) {
+    if (checked[i-2][0]) {
+      checkedRows.push(i);
+    }
+  }
+  for (let i = 0; i < checkedRows.length; i++) {
+    AddIngredients(shoppingList,recipeList.getRange(checkedRows[i],2).getValue(),checkedRows[i]);
+  }
 }
