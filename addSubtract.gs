@@ -64,7 +64,7 @@ function getIngredients(name) {
   }
   const recipe = workbook.getSheetByName(name);
   if (!recipe) {
-    console.log("name");
+    console.log(name);
     return;
   }
   const lastRow = recipe.getLastRow();
@@ -95,7 +95,7 @@ function AddIngredients(sheet, name, row, oldValue = null) {
 
   let servings = 1;
   let totalServings = 0;
-  if (sheet === shoppingList) {
+  if (sheet === shoppingList || sheet.getName().includes("_System")) {
     servings = getNumServings(name);
     totalServings = getTotalServings(row);
   }
@@ -178,10 +178,15 @@ function AddIngredients(sheet, name, row, oldValue = null) {
   }
 }
 
-function SubtractIngredients(sheet, name, row, oldValue=null) {
+function SubtractIngredients(sheet, name, row=null, oldValue=null) {
   `subtract ingredients`
   const ingredientPairs = getIngredients(name);
-  let servings = getNumServings(name);
+  let servings = 1;
+  let totalServings = 1;
+  if (name != 'Owned Items List') {
+    servings = getNumServings(name);
+    totalServings = getTotalServings(row);
+  }
   const isNum = typeof servings === 'number' && Number.isFinite(servings);
   if (servings === 0) {
     return -1;
@@ -189,7 +194,6 @@ function SubtractIngredients(sheet, name, row, oldValue=null) {
   if (!isNum) {
     servings = 1;
   }
-  let totalServings = getTotalServings(row);
   if(!oldValue) {
     const isNumber = typeof totalServings === 'number' && Number.isFinite(totalServings);
     if (!isNumber) {

@@ -145,6 +145,7 @@ function detectSheetChanges(e) {
             newSheet.getRange(1,5).insertCheckboxes();
             newSheet.getRange(1,7).insertCheckboxes();
             newSheet.getRange(1,9).insertCheckboxes();
+            newSheet.setColumnWidth(4,150);
             break;
           case 'Owned Items List':
             newSheet.getRange(1,6).insertCheckboxes();
@@ -153,7 +154,11 @@ function detectSheetChanges(e) {
           default: 
             break;
         }
-        newSheet.getRange(1,1,values.length,values[0].length).setValues(values);
+        const numberRows = values.length;
+        const numberCols = values[0].length;
+        if (numberRows > 0 && numberCols > 0) {
+          newSheet.getRange(1,1,numberRows,numberCols).setValues(values);
+        }
         updateSheetAddition(newSheet.getSheetId())
         dataTrackerSheet.deleteRows(startRow, rowCount);
       }

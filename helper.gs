@@ -40,7 +40,10 @@ function updateSheetNameMemory() {
   })
 
   trackerSheet.clear();
-  trackerSheet.getRange(1,1, data.length,2).setValues(data);
+  const numRows = data.length;
+  if (numRows > 0) {
+    trackerSheet.getRange(1,1, numRows,2).setValues(data);
+  }
 }
 
 function updateSheetMemory() {
@@ -53,7 +56,7 @@ function updateSheetMemory() {
   const data = [];
 
   sheets.forEach(sheet => {
-    if (!sheet.getName().includes("_System")) {
+    if (!sheet.getName().includes("_System") && !sheet.getName() != "Undo Clear Cart") {
       data.push([sheet.getSheetId(), sheet.getDataRange().getValues()]);
     }
   })
@@ -64,8 +67,12 @@ function updateSheetMemory() {
     if (getSheetById(workbook,id).getLastRow() === 0) {
       break;
     }
-    trackerSheet.getRange(row,2, sheetData.length,sheetData[0].length).setValues(sheetData);
-    row += sheetData.length;
+    const numRows = sheetData.length;
+    const numCols = sheetData[0].length;
+    if (numRows > 0 && numCols > 0) {
+      trackerSheet.getRange(row,2, numRows,numCols).setValues(sheetData);
+      row += sheetData.length;
+    }
   }
 }
 
@@ -115,12 +122,17 @@ function updateSheetDeletion(id) {
         }
       } 
     }
+    console.log(startRow,deleteCount);
     dataTrackerSheet.deleteRows(startRow, deleteCount);
   }
 }
 
 function updateSheetAddition(id) {
-  const data = workbook.getSheetById(id).getDataRange().getValues();
+  const sheet = workbook.getSheetById(id);
+  if (!sheet) {
+    return;
+  }
+  const data = sheet.getDataRange().getValues();
 
   const dataTrackerSheet = workbook.getSheetByName("_System_Sheet_Data");
 
@@ -131,7 +143,11 @@ function updateSheetAddition(id) {
 
   const startRow = dataTrackerSheet.getLastRow()+1;
   dataTrackerSheet.getRange(startRow,1).setValue(id);
-  dataTrackerSheet.getRange(startRow,2, data.length,data[0].length).setValues(data);
+  const numRows = data.length;
+  const numCols = data[0].length;
+  if (numRows > 0 && numCols > 0) {
+    dataTrackerSheet.getRange(startRow,2, numRows, numCols).setValues(data);
+  }
 }
 
 function updateSheetEdit(id) {
@@ -146,4 +162,40 @@ function getSheetById(workbook,id) {
 function getSheetByIndex(index) {
   const sheets = workbook.getSheets();
   return sheets[index-1] || null;
+}
+
+function updateShopMemory() {
+  let trackerSheet = workbook.getSheetByName("_System_Shop_Data");
+  if (!trackerSheet) {
+    trackerSheet = workbook.insertSheet("_System_Shop_Data");
+    trackerSheet.hideSheet();
+  }
+  trackerSheet.clear();
+  const shopPairs = shoppingList.getRange(2,1,shoppingList.getLastRow()-1,3).getValues();
+  const numRows = shopPairs.length
+  const numCols = shopPairs[0].length
+  if (numRows > 0 && numCols > 0) {
+    trackerSheet.getRange(2,1,shopPairs.length,shopPairs[0].length).setValues(shopPairs);
+  }
+}
+
+function addShopMemory(name) {
+  const row = findRowWithValue(recipeList,2,name);
+  let sheet = workbook.getSheetByName("_System_Shop_Data");
+  if (!sheet) {
+    sheet = workbook.insertSheet("_System_Shop_Data");
+    sheet.hideSheet();
+  }
+  AddIngredients(sheet,name,row);
+}
+
+function subtractShopMemory(name) {
+  const row = findRowWithValue(recipeList,2,name);
+  let sheet = workbook.getSheetByName("_System_Shop_Data");
+  if (!sheet) {
+    sheet = workbook.insertSheet("_System_Shop_Data");
+    sheet.hideSheet();
+    return;
+  }
+  SubtractIngredients(sheet,name,row);
 }

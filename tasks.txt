@@ -1,5 +1,3 @@
-- add a list of things you already have at home
-- add checkbox to choose if you want to subtract the things you have at home
 - configure new spreadsheet once opened 
 - substitution for common items
 - show possible recipes you can make with what you have at home?

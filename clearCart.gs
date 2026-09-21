@@ -4,9 +4,9 @@ function clearCart() {
   if (lastRow < 2) {
     return;
   }
-  let backup = workbook.getSheetByName('Undo Clear Cart');
+  let backup = workbook.getSheetByName('_System_Cart_Data');
   if (!backup) {
-    backup = workbook.insertSheet('Undo Clear Cart');
+    backup = workbook.insertSheet('_System_Cart_Data');
   }
   backup.clear();
   backup.hideSheet();
@@ -17,8 +17,9 @@ function clearCart() {
     backup.getRange(i,3).setValue(item);
     i++;
   }
-  shoppingList.deleteRows(2,lastRow);
+  shoppingList.deleteRows(2,lastRow-1);
   shoppingList.getRange(1,9).setValue('FALSE');
+    
   const lastRowInColumn = getLastRowInColumn(recipeList, 2);
   const checked = recipeList.getRange(2,1,lastRowInColumn-1).getValues();
   const checkedRows = [];
@@ -29,17 +30,23 @@ function clearCart() {
     }
     values.push(['FALSE']);
   }
-  recipeList.getRange(2,1,values.length).setValues(values);
-  backup.getRange(1,4,checkedRows.length).setValues(checkedRows);
+  const numRows = values.length;
+  if (numRows > 0) {
+    recipeList.getRange(2,1,numRows).setValues(values);
+  }
+  const numCheckedRows = checkedRows.length;
+  if (numCheckedRows > 0) {
+    backup.getRange(1,4,numCheckedRows).setValues(checkedRows);
+  }
 }
 
 function undoClearCart() {
-  const backup = workbook.getSheetByName('Undo Clear Cart');
+  const backup = workbook.getSheetByName('_System_Cart_Data');
   if (!backup) {
     return;
   }
   let i = 2;
-  for (const [number, unit, item] of getIngredients('Undo Clear Cart')) {
+  for (const [number, unit, item] of getIngredients('_System_Cart_Data')) {
     shoppingList.getRange(i,1).setValue(number);
     shoppingList.getRange(i,2).setValue(unit);
     shoppingList.getRange(i,3).setValue(item);

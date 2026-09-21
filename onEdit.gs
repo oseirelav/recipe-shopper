@@ -142,7 +142,29 @@ function onEdit(e) {
   }
   if (sheetName === "Shopping List") {
     if (row === 1) {
-      if (column === 7) {
+      if (column === 5) {
+        if (newValue) {
+          SubtractIngredients(shoppingList, 'Owned Items List');
+        }
+        else {
+          const lastRow = shoppingList.getLastRow();
+          if (lastRow >= 2) {
+            shoppingList.deleteRows(2,lastRow-1);
+          }          
+          const lastRowInColumn = getLastRowInColumn(recipeList, 2);
+          const checked = recipeList.getRange(2,1,lastRowInColumn-1).getValues();
+          const checkedRows = [];
+          for (let i = 2; i < lastRowInColumn+1; i++) {
+            if (checked[i-2][0]) {
+              checkedRows.push(i);
+            }
+          }
+          for (let i = 0; i < checkedRows.length; i++) {
+            AddIngredients(shoppingList,recipeList.getRange(checkedRows[i],2).getValue(),checkedRows[i]);
+          }
+        }
+      }
+      else if (column === 7) {
         if (newValue) {
           clearCart();
         }
@@ -157,8 +179,11 @@ function onEdit(e) {
       }
     }
   }
+  if (sheetName === "Owned Items List") {
+
+  }
   if (sheetName != "Shopping List" || row != 1 || column != 7) {
-    const backup = workbook.getSheetByName('Undo Clear Cart');
+    const backup = workbook.getSheetByName('_System_Cart_Data');
     if (backup) {
       workbook.deleteSheet(backup);
       shoppingList.getRange(1,9).setValue('TRUE');
