@@ -1,6 +1,7 @@
 const workbook = SpreadsheetApp.getActiveSpreadsheet();
 const recipeList = workbook.getSheetByName("Recipe List");
 const shoppingList = workbook.getSheetByName("Shopping List");
+const availableRecipes = workbook.getSheetByName("Available Recipes List");
 
 function setCell(sheet, row, column, value) {
   const currentMaxRows = sheet.getMaxRows();
@@ -30,7 +31,7 @@ function onEdit(e) {
 
   const currentMaxRows = sheet.getMaxRows();
 
-  if (row === 1 && oldValue != "" && (sheetName.toLowerCase().includes("list") || column != 5) && range.isChecked() == null) {
+  if (row === 1 && oldValue != "" && sheetName.toLowerCase().includes("list") && column != 5 && range.isChecked() == null) {
     range.setValue(oldValue);
     return;
   }
@@ -144,7 +145,7 @@ function onEdit(e) {
       const cell = sheet.getRange(row,2);
       const name = cell.getValue();
       const isNumber = typeof newValue === 'number' && Number.isFinite(newValue);
-      if (!isNumber) {
+      if (!isNumber || Number(newValue) < 0) {
         console.log('not a valid number');
         oldValue = Number(oldValue);
         if (Number.isFinite(oldValue)) {
@@ -167,7 +168,7 @@ function onEdit(e) {
       }
     }
   }
-  if (sheetName === "Shopping List") {
+  else if (sheetName === "Shopping List") {
     if (row === 1) {
       if (column === 5) {
         if (newValue) {
@@ -192,7 +193,7 @@ function onEdit(e) {
       }
     }
   }
-  if (sheetName === "Owned Items List") {
+  else if (sheetName === "Owned Items List") {
     if (row === 1) {
       if (column === 7) {
         if (newValue) {
@@ -203,6 +204,36 @@ function onEdit(e) {
         if (newValue) {
           undoClearCart(sheet);
         }
+      }
+    }
+    updateAvailableRecipes()
+  }
+  else if (sheetName === "Available Recipes List") {
+    if (column === 1) {
+      if (oldValue != "") {
+        range.setValue(oldValue);
+      }
+    }
+    else if (column === 2 || (row === 1 && column === 5)) {
+      const isNumber = typeof newValue === 'number' && Number.isFinite(newValue);
+      if (!isNumber || Number(newValue) < 0) {
+        console.log('not a valid number');
+        oldValue = Number(oldValue);
+        if (Number.isFinite(oldValue)) {
+          range.setValue(oldValue);
+        }
+        else {
+          range.setValue(0);
+        }
+      }
+      if (column === 5) {
+        updateAvailableRecipes();
+      }
+    }
+    else if (column === 4) {
+      if (row != 1) {
+        const newTabName = sheet.getRange(row,2).getValue();
+        transferTabs(newTabName,row,column);
       }
     }
   }
@@ -230,22 +261,29 @@ function onEdit(e) {
       workbook.getSheetByName("Owned Items List").getRange(1,9).setValue(true);
     }
   }
-  if ((sheetName != "Recipe List" && !sheetName.includes("_System")) && column === 2 && row != 1) {
-    if (row > currentMaxRows) {
-      sheet.insertRowsAfter(currentMaxRows,1000);
-    }
-    const unitCell = sheet.getRange(row,2);
-    const newValue = unitCell.getValue();
-    const numberCell = sheet.getRange(row,1);
-    const number = numberCell.getValue();
-    if (oldValue) {
-      if (!isUnit(oldValue) || !equivalentUnits(oldValue, newValue)) {
-        console.log('not a valid unit conversion');
-        unitCell.setValue(oldValue);
+  if (sheetName != "Recipe List" && !sheetName.includes("_System") && sheetName != "Available Recipes List") {
+    if (column === 2 && row != 1) {
+      if (row > currentMaxRows) {
+        sheet.insertRowsAfter(currentMaxRows,1000);
       }
-      else {
-        conversion = convert(number, getConversionRate(oldValue,newValue));
-        numberCell.setValue(conversion);
+      const unitCell = sheet.getRange(row,2);
+      const newValue = unitCell.getValue();
+      const numberCell = sheet.getRange(row,1);
+      const number = numberCell.getValue();
+      if (oldValue) {
+        if (!isUnit(oldValue) || !equivalentUnits(oldValue, newValue)) {
+          console.log('not a valid unit conversion');
+          unitCell.setValue(oldValue);
+        }
+        else {
+          conversion = convert(number, getConversionRate(oldValue,newValue));
+          numberCell.setValue(conversion);
+        }
+      }
+    }
+    else if (column == 1 && row != 1) {
+      if (!Number(newValue) || Number(newValue) < 0) {
+        range.setValue(oldValue);
       }
     }
   }
@@ -254,29 +292,45 @@ function onEdit(e) {
       if (column === 10) {
         if (newValue) {
           `checked`
-          let newRow = findRowWithValue(recipeList,2,sheetName);
-          if (newRow === 0) {
-            newRow = getLastRowInColumn(recipeList,2)+1;
+          if (Number(sheet.getRange(1,5).getValue()) <= 0) {
+            range.setValue(oldValue);
+          }
+          else {
+            let newRow = findRowWithValue(recipeList,2,sheetName);
+            if (newRow === 0) {
+              newRow = getLastRowInColumn(recipeList,2)+1;
+              if (newRow > currentMaxRows) {
+                sheet.insertRowsAfter(currentMaxRows,1000);
+              }
+              recipeList.getRange(newRow, 2).setValue(sheetName);
+            }
             if (newRow > currentMaxRows) {
               sheet.insertRowsAfter(currentMaxRows,1000);
             }
-            recipeList.getRange(newRow, 2).setValue(sheetName);
+            const servings = sheet.getRange(1,5).getValue();
+            recipeList.getRange(newRow, 3).setValue(servings);
+            recipeList.getRange(newRow,1).clearContent();
+            recipeList.getRange(newRow,1).insertCheckboxes();
+            recipeList.getRange(newRow,4).clearContent();
+            recipeList.getRange(newRow,4).insertCheckboxes();
+            const [possible, numServings] = isPossibleRecipe(sheet,getIngredients("Owned Items List"), Number(availableRecipes.getRange(1,5).getValue()));
+            if (possible) {
+              const insertRow = availableRecipes.getLastRow()+1;
+              availableRecipes.getRange(insertRow,1).setValue(sheetName);
+              availableRecipes.getRange(insertRow,2).setValue(numServings);
+              availableRecipes.getRange(insertRow,3).insertCheckboxes();
+            }
           }
-          if (newRow > currentMaxRows) {
-            sheet.insertRowsAfter(currentMaxRows,1000);
-          }
-          const servings = sheet.getRange(1,5).getValue();
-          recipeList.getRange(newRow, 3).setValue(servings);
-          recipeList.getRange(newRow,1).clearContent();
-          recipeList.getRange(newRow,1).insertCheckboxes();
-          recipeList.getRange(newRow,4).clearContent();
-          recipeList.getRange(newRow,4).insertCheckboxes();
         }
         else {
           `unchecked`
           const newRow = findRowWithValue(recipeList,2, sheetName);
           if (newRow != 0 && newRow != 1) {
             recipeList.deleteRow(newRow);
+          }
+          const rowToDeleteAvailableRecipes = findRowWithValue(availableRecipes, 1, sheetName);
+          if (rowToDeleteAvailableRecipes != 0 && rowToDeleteAvailableRecipes != 1) {
+            availableRecipes.deleteRow(rowToDeleteAvailableRecipes);
           }
         }
       }
@@ -292,7 +346,7 @@ function onEdit(e) {
       }
       else if (column === 5) {
         const isNumber = typeof newValue === 'number' && Number.isFinite(newValue);
-        if (!isNumber) {
+        if (!isNumber || Number(newValue) < 0) {
           console.log('not a valid number');
           oldValue = Number(oldValue);
           if (Number.isFinite(oldValue)) {
@@ -304,7 +358,13 @@ function onEdit(e) {
         }
         else {
           if (sheet.getRange(1,10).getValue()) { 
-            AddIngredients(sheet, sheetName, null, oldValue);
+            if (Number(newValue) === 0) {
+              range.setValue(oldValue);
+            }
+            else {
+              AddIngredients(sheet, sheetName, null, oldValue);
+              recipeList.getRange(findRowWithValue(recipeList,2,sheetName),3).setValue(newValue);
+            }
           }
         }
       }

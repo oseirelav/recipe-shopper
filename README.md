@@ -5,6 +5,8 @@ Necessary sheets are as follows:
 - Recipe List
 - Shopping List
 - Owned Items List
+- Substitutions List
+- Available Recipes List
 
 After pasting all functions, you will want to delete all sheets to get the proper formatting
 

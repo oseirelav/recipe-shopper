@@ -143,6 +143,9 @@ function detectSheetChanges(e) {
           case 'Substitutions List':
             index = 5;
             break;
+          case 'Available Recipes List':
+            index = 6;
+            break;
           default:
             break;
         }
@@ -201,6 +204,11 @@ function detectSheetChanges(e) {
             newSheet.getRange("C:C").setWrapStrategy(SpreadsheetApp.WrapStrategy.WRAP);
             newSheet.getRange("G:G").setWrapStrategy(SpreadsheetApp.WrapStrategy.WRAP);
             break;
+          case 'Available Recipes List':
+            newSheet.setColumnWidth(1,150);
+            newSheet.setColumnWidth(5,50);
+            newSheet.getRange("A:A").setWrapStrategy(SpreadsheetApp.WrapStrategy.WRAP);
+            break;
           default: 
             break;
         }
@@ -229,6 +237,10 @@ function detectSheetChanges(e) {
         }
         recipeList.deleteRow(rowToDelete);
         updateSheetDeletion(-1);
+      }
+      const rowToDeleteAvailableRecipes = findRowWithValue(availableRecipes, 1, name);
+      if (rowToDeleteAvailableRecipes != 0 && rowToDeleteAvailableRecipes != 1) {
+        availableRecipes.deleteRow(rowToDeleteAvailableRecipes);
       }
     }
   }
