@@ -44,9 +44,6 @@ function onEdit(e) {
         `checked`
         const success = AddIngredients(shoppingList, name, row);
         if (success === -1) {
-          if (row > currentMaxRows) {
-            sheet.insertRowsAfter(currentMaxRows,1000);
-          }
           sheet.getRange(row,1).setValue('FALSE');
         }
       }
@@ -54,9 +51,6 @@ function onEdit(e) {
         `unchecked`
         const success = SubtractIngredients(shoppingList, name, row);
         if (success === -1) {
-          if (row > currentMaxRows) {
-            sheet.insertRowsAfter(currentMaxRows,1000);
-          }
           sheet.getRange(row,1).setValue('TRUE');
         }
       }
@@ -237,6 +231,29 @@ function onEdit(e) {
       }
     }
   }
+  if (sheetName === "Substitutions List") {
+    if (column === 6 && row != 1) {
+      const unitCell = sheet.getRange(row,2);
+      const newValue = unitCell.getValue();
+      const numberCell = sheet.getRange(row,1);
+      const number = numberCell.getValue();
+      if (oldValue) {
+        if (!isUnit(oldValue) || !equivalentUnits(oldValue, newValue)) {
+          console.log('not a valid unit conversion');
+          unitCell.setValue(oldValue);
+        }
+        else {
+          conversion = convert(number, getConversionRate(oldValue,newValue));
+          numberCell.setValue(conversion);
+        }
+      }
+    }
+    else if (column == 5 && row != 1) {
+      if (!Number(newValue) || Number(newValue) < 0) {
+        range.setValue(oldValue);
+      }
+    }
+  }
   if (sheetName != "Shopping List" || row != 1 || column != 7) {
     const backup = workbook.getSheetByName('_System_Cart_Data');
     if (backup) {
@@ -263,9 +280,6 @@ function onEdit(e) {
   }
   if (sheetName != "Recipe List" && !sheetName.includes("_System") && sheetName != "Available Recipes List") {
     if (column === 2 && row != 1) {
-      if (row > currentMaxRows) {
-        sheet.insertRowsAfter(currentMaxRows,1000);
-      }
       const unitCell = sheet.getRange(row,2);
       const newValue = unitCell.getValue();
       const numberCell = sheet.getRange(row,1);
