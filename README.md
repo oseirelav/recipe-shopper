@@ -19,4 +19,4 @@ Select event source: From spreadsheet
 Select event type: On change
 Failure notification settings: user's choice
 
-Alternatively, you can just use the following link to make a copy: https://docs.google.com/spreadsheets/d/1RS5pLMJ1ZWkBQZfkxO_z4fH6PoY6v5DV4ZZAgbbDwlU/copy
+Alternatively, you can just use the following link to make a copy: https://docs.google.com/spreadsheets/d/1sybrKBnknQggs4XQm5RWnh95SlUOMAsqXz5s_ThXxTk/copy

@@ -224,9 +224,9 @@ function onEdit(e) {
         updateAvailableRecipes();
       }
     }
-    else if (column === 4) {
+    else if (column === 3) {
       if (row != 1) {
-        const newTabName = sheet.getRange(row,2).getValue();
+        const newTabName = sheet.getRange(row,1).getValue();
         transferTabs(newTabName,row,column);
       }
     }

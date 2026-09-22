@@ -1,1 +1,0 @@
-- fix go to tab for available recipes page
