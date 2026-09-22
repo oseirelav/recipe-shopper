@@ -1,3 +1,5 @@
 - substitution for common items
 - show possible recipes you can make with what you have at home?
 - figure out issue with updateSheetEdit where recipeList keeps getting added to sheet memory
+- if recipe sheet is deleted without being checked complete, figure out how to remove from recipe list
+- when new checkbox is inserted, clear value first

@@ -178,7 +178,7 @@ function AddIngredients(sheet, name, row, oldValue = null) {
   }
 }
 
-function SubtractIngredients(sheet, name, row=null, oldValue=null) {
+function SubtractIngredients(sheet, name=null, row=null, oldValue=null) {
   `subtract ingredients`
   const ingredientPairs = getIngredients(name);
   if (ingredientPairs === null) {
@@ -187,7 +187,7 @@ function SubtractIngredients(sheet, name, row=null, oldValue=null) {
   }
   let servings = 1;
   let totalServings = 1;
-  if (name != 'Owned Items List' && !name.includes("_System")) {
+  if (name === null || (name != 'Owned Items List' && !name.includes("_System"))) {
     servings = getNumServings(name);
     totalServings = getTotalServings(row);
   }

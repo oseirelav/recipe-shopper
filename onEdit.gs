@@ -22,6 +22,12 @@ function onEdit(e) {
   const newValue = range.getValue();
   const column = range.getColumn();
   const oldValue = e.oldValue || "";
+    
+  if (sheetName.includes("_System")) {
+    range.setValue(oldValue);
+    return;
+  }
+
   const currentMaxRows = sheet.getMaxRows();
 
   if (row === 1 && oldValue != "" && (sheetName.toLowerCase().includes("list") || column != 5) && range.isChecked() == null) {
@@ -89,6 +95,12 @@ function onEdit(e) {
           firstRow.setFontWeight("bold");
           const newItems = [["#",	"Unit",	"Item",	"Serves:",	0,	"Recipe",	"Go To Recipe List"]]
           newSheet.getRange(1,1,1,7).setValues(newItems);
+          newSheet.setColumnWidth(1,50);
+          newSheet.setColumnWidth(2,50);
+          newSheet.setColumnWidth(3,150);
+          newSheet.setColumnWidth(4,60);
+          newSheet.setColumnWidth(5,50);
+          newSheet.getRange("C:C").setWrapStrategy(SpreadsheetApp.WrapStrategy.OVERFLOW);
           newSheet.getRange("F:F").setWrapStrategy(SpreadsheetApp.WrapStrategy.OVERFLOW);
           newSheet.setColumnWidth(7, 120);
           newSheet.getRange("H1:H1").insertCheckboxes();
@@ -96,6 +108,7 @@ function onEdit(e) {
           newSheet.getRange(1,9).setValue("Completed?")
           newSheet.getRange("J1:J1").insertCheckboxes();
           newSheet.setColumnWidth(10, 50);
+          updateSheetAddition(newSheet.getSheetId())
         }
         else {
           console.log("else");
@@ -122,6 +135,7 @@ function onEdit(e) {
             }
           }
         }
+        updateSheetNameMemory();
       }
     }
     else if (column === 3) {
@@ -214,7 +228,7 @@ function onEdit(e) {
       workbook.getSheetByName("Owned Items List").getRange(1,9).setValue(true);
     }
   }
-  if ((sheetName != "Recipe List" && sheetName != "Owned Items List") && column === 2 && row != 1) {
+  if ((sheetName != "Recipe List" && !sheetName.includes("_System")) && column === 2 && row != 1) {
     if (row > currentMaxRows) {
       sheet.insertRowsAfter(currentMaxRows,1000);
     }
@@ -251,6 +265,8 @@ function onEdit(e) {
           }
           const servings = sheet.getRange(1,5).getValue();
           recipeList.getRange(newRow, 3).setValue(servings);
+          recipeList.getRange(newRow,1).insertCheckboxes();
+          recipeList.getRange(newRow,4).insertCheckboxes();
         }
         else {
           `unchecked`

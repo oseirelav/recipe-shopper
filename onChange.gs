@@ -38,6 +38,12 @@ function detectSheetChanges(e) {
         if (prevSheetName && !prevSheetName.includes("List")) {
           const newItems = [["#",	"Unit",	"Item",	"Serves:",	0,	"Recipe",	"Go To Recipe List"]]
           newSheet.getRange(1,1,1,7).setValues(newItems);
+          newSheet.setColumnWidth(1,50);
+          newSheet.setColumnWidth(2,50);
+          newSheet.setColumnWidth(3,150);
+          newSheet.setColumnWidth(4,60);
+          newSheet.setColumnWidth(5,50);
+          newSheet.getRange("C:C").setWrapStrategy(SpreadsheetApp.WrapStrategy.OVERFLOW);
           newSheet.getRange("F:F").setWrapStrategy(SpreadsheetApp.WrapStrategy.OVERFLOW);
           newSheet.setColumnWidth(7, 120);
           newSheet.getRange("H1:H1").insertCheckboxes();
@@ -134,6 +140,9 @@ function detectSheetChanges(e) {
           case 'Owned Items List':
             index = 4;
             break;
+          case 'Substitutions List':
+            index = 5;
+            break;
           default:
             break;
         }
@@ -147,18 +156,50 @@ function detectSheetChanges(e) {
         firstRow.setFontWeight("bold");
         switch(name) {
           case 'Recipe List':
-            newSheet.getRange("A2:A").insertCheckboxes();
-            newSheet.getRange("D2:D").insertCheckboxes();
+            newSheet.setColumnWidth(1,50);
+            newSheet.setColumnWidth(2,150);
+            newSheet.getRange("B:B").setWrapStrategy(SpreadsheetApp.WrapStrategy.WRAP);
+            newSheet.getRange("E:E").setWrapStrategy(SpreadsheetApp.WrapStrategy.OVERFLOW);
             break;
           case 'Shopping List':
             newSheet.getRange(1,5).insertCheckboxes();
             newSheet.getRange(1,7).insertCheckboxes();
             newSheet.getRange(1,9).insertCheckboxes();
+            newSheet.setColumnWidth(2,50);
+            newSheet.setColumnWidth(3,150);
+            newSheet.getRange("C:C").setWrapStrategy(SpreadsheetApp.WrapStrategy.OVERFLOW);
+            newSheet.setColumnWidth(1,50);
             newSheet.setColumnWidth(4,150);
+            newSheet.setColumnWidth(5,50);
+            newSheet.setColumnWidth(6,50);
+            newSheet.setColumnWidth(7,50);
+            newSheet.setColumnWidth(8,50);
+            newSheet.setColumnWidth(9,50);
             break;
           case 'Owned Items List':
+            newSheet.setColumnWidth(1,50);
+            newSheet.setColumnWidth(2,50);
+            newSheet.setColumnWidth(3,150);
+            newSheet.getRange("C:C").setWrapStrategy(SpreadsheetApp.WrapStrategy.OVERFLOW);
             newSheet.getRange(1,7).insertCheckboxes();
             newSheet.getRange(1,9).insertCheckboxes();
+            newSheet.setColumnWidth(4,150);
+            newSheet.setColumnWidth(5,50);
+            newSheet.setColumnWidth(6,50);
+            newSheet.setColumnWidth(7,50);
+            newSheet.setColumnWidth(8,50);
+            newSheet.setColumnWidth(9,50);
+            break;
+          case 'Substitutions List':
+            newSheet.setColumnWidth(1,50);
+            newSheet.setColumnWidth(2,50);
+            newSheet.setColumnWidth(3,150);
+            newSheet.setColumnWidth(4,50);
+            newSheet.setColumnWidth(5,50);
+            newSheet.setColumnWidth(6,50);
+            newSheet.setColumnWidth(7,150);
+            newSheet.getRange("C:C").setWrapStrategy(SpreadsheetApp.WrapStrategy.WRAP);
+            newSheet.getRange("G:G").setWrapStrategy(SpreadsheetApp.WrapStrategy.WRAP);
             break;
           default: 
             break;
@@ -168,7 +209,7 @@ function detectSheetChanges(e) {
         if (numberRows > 0 && numberCols > 0) {
           const currentMaxRows = newSheet.getMaxRows();
           if (numberRows > currentMaxRows) {
-            newSheet.insertRowsAfter(currentMaxRows,1000);
+            newSheet.insertRowsAfter(currentMaxRows,Math.ceil(numberRows/1000)*1000-currentMaxRows);
           }
           newSheet.getRange(1,1,numberRows,numberCols).setValues(values);
         }
@@ -183,8 +224,8 @@ function detectSheetChanges(e) {
         if (rowWithId >= 1) {
           dataTrackerSheet.getRange(rowWithId,1).setValue(-1);
         }
-        if (recipeList.getRange(rowToDelete,1)) {
-          SubtractIngredients(shoppingList, null, rowToDelete);
+        if (recipeList.getRange(rowToDelete,1).getValue()) {
+          SubtractIngredients(shoppingList,null,rowToDelete);
         }
         recipeList.deleteRow(rowToDelete);
         updateSheetDeletion(-1);
