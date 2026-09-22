@@ -61,7 +61,9 @@ function onEdit(e) {
       }
     }
     else if (column === 2 && row != 1) {
+      recipeList.getRange(row,1).clearContent();
       recipeList.getRange(row,1).insertCheckboxes();
+      recipeList.getRange(row,4).clearContent();
       recipeList.getRange(row,4).insertCheckboxes();
       if (newValue === "") {
         console.log('not a valid name');
@@ -265,7 +267,9 @@ function onEdit(e) {
           }
           const servings = sheet.getRange(1,5).getValue();
           recipeList.getRange(newRow, 3).setValue(servings);
+          recipeList.getRange(newRow,1).clearContent();
           recipeList.getRange(newRow,1).insertCheckboxes();
+          recipeList.getRange(newRow,4).clearContent();
           recipeList.getRange(newRow,4).insertCheckboxes();
         }
         else {
