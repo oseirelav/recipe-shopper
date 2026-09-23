@@ -37,129 +37,123 @@ function onEdit(e) {
   }
 
   if (sheetName === "Recipe List") {
-    if (column === 1) {
-      const cell = sheet.getRange(row,2);
-      const name = cell.getValue();
-      if (newValue) {
-        `checked`
-        const success = AddIngredients(shoppingList, name, row);
-        if (success === -1) {
-          sheet.getRange(row,1).setValue('FALSE');
-        }
-      }
-      else {
-        `unchecked`
-        const success = SubtractIngredients(shoppingList, name, row);
-        if (success === -1) {
-          sheet.getRange(row,1).setValue('TRUE');
-        }
-      }
-    }
-    else if (column === 2 && row != 1) {
-      recipeList.getRange(row,1).clearContent();
-      recipeList.getRange(row,1).insertCheckboxes();
-      recipeList.getRange(row,4).clearContent();
-      recipeList.getRange(row,4).insertCheckboxes();
-      if (newValue === "") {
-        console.log('not a valid name');
-        range.setValue(oldValue);
-      }
-      else {
-        if (oldValue === "") {
-          let recipeSheet = workbook.getSheetByName(String(newValue));
-          if (!recipeSheet) {
-            workbook.insertSheet(String(newValue),workbook.getNumSheets());
+    if (recipeList.getRange(row,2).getValue() != "") {
+      if (column === 1) {
+        const cell = sheet.getRange(row,2);
+        const name = cell.getValue();
+        if (newValue) {
+          `checked`
+          const success = AddIngredients(shoppingList, name, row);
+          if (success === -1) {
+            sheet.getRange(row,1).setValue('FALSE');
           }
-          else {
-            let i = 1;
-            while(true) {
-              const newName = String(newValue) + " " + String(i);
-              const newSheet = workbook.getSheetByName(newName);
-              if (!newSheet) {
-                workbook.insertSheet(newName, workbook.getNumSheets());
-                range.setValue(newName);
-                break; 
-              }
-              else {
-                i++;
-              }
-            }
-          }
-          const newSheet = workbook.getSheetByName(range.getValue());
-          newSheet.setFrozenRows(1);
-          const firstRow = newSheet.getRange("1:1");
-          firstRow.setBackground("#cfe2f3");
-          firstRow.setFontWeight("bold");
-          const newItems = [["#",	"Unit",	"Item",	"Serves:",	0,	"Recipe",	"Go To Recipe List"]]
-          newSheet.getRange(1,1,1,7).setValues(newItems);
-          newSheet.setColumnWidth(1,50);
-          newSheet.setColumnWidth(2,50);
-          newSheet.setColumnWidth(3,150);
-          newSheet.setColumnWidth(4,60);
-          newSheet.setColumnWidth(5,50);
-          newSheet.getRange("C:C").setWrapStrategy(SpreadsheetApp.WrapStrategy.OVERFLOW);
-          newSheet.getRange("F:F").setWrapStrategy(SpreadsheetApp.WrapStrategy.OVERFLOW);
-          newSheet.setColumnWidth(7, 120);
-          newSheet.getRange("H1:H1").insertCheckboxes();
-          newSheet.setColumnWidth(8, 50);
-          newSheet.getRange(1,9).setValue("Completed?")
-          newSheet.getRange("J1:J1").insertCheckboxes();
-          newSheet.setColumnWidth(10, 50);
-          updateSheetAddition(newSheet.getSheetId())
         }
         else {
-          console.log("else");
-          let newSheet = workbook.getSheetByName(oldValue);
-          if (!newSheet) {
-            workbook.insertSheet(oldValue,workbook.getNumSheets());
-            newSheet = workbook.getSheetByName(oldValue);
-          }
-          try {  
-            newSheet.setName(newValue);
-          } 
-          catch (error) {
-            let i = 1;
-            while(true) {
-              const newName = String(newValue) + " " + String(i);
-              try {
-                newSheet.setName(newName);
-                range.setValue(newName);
-                break;
-              }
-              catch (error) {
-                i++;
-              }
-            }
+          `unchecked`
+          const success = SubtractIngredients(shoppingList, name, row);
+          if (success === -1) {
+            sheet.getRange(row,1).setValue('TRUE');
           }
         }
-        updateSheetNameMemory();
       }
-    }
-    else if (column === 3) {
-      const cell = sheet.getRange(row,2);
-      const name = cell.getValue();
-      const isNumber = typeof newValue === 'number' && Number.isFinite(newValue);
-      if (!isNumber || Number(newValue) < 0) {
-        console.log('not a valid number');
-        oldValue = Number(oldValue);
-        if (Number.isFinite(oldValue)) {
+      else if (column === 2 && row != 1) {
+        recipeList.getRange(row,1).clearContent();
+        recipeList.getRange(row,1).insertCheckboxes();
+        recipeList.getRange(row,4).clearContent();
+        recipeList.getRange(row,4).insertCheckboxes();
+        if (newValue === "") {
+          console.log('not a valid name');
           range.setValue(oldValue);
         }
         else {
-          range.setValue(0);
+          if (oldValue === "") {
+            let recipeSheet = workbook.getSheetByName(String(newValue));
+            if (!recipeSheet) {
+              workbook.insertSheet(String(newValue),workbook.getNumSheets());
+            }
+            else {
+              let i = 1;
+              while(true) {
+                const newName = String(newValue) + " " + String(i);
+                const newSheet = workbook.getSheetByName(newName);
+                if (!newSheet) {
+                  workbook.insertSheet(newName, workbook.getNumSheets());
+                  range.setValue(newName);
+                  break; 
+                }
+                else {
+                  i++;
+                }
+              }
+            }
+            const newSheet = workbook.getSheetByName(range.getValue());
+            formatNewRecipeSheet(newSheet);
+            updateSheetAddition(newSheet.getSheetId());
+          }
+          else {
+            console.log("else");
+            let newSheet = workbook.getSheetByName(oldValue);
+            if (!newSheet) {
+              workbook.insertSheet(oldValue,workbook.getNumSheets());
+              newSheet = workbook.getSheetByName(oldValue);
+              formatNewRecipeSheet(newSheet);
+              updateSheetAddition(newSheet.getSheetId());
+            }
+            try {  
+              newSheet.setName(newValue);
+            } 
+            catch (error) {
+              let i = 1;
+              while(true) {
+                const newName = String(newValue) + " " + String(i);
+                try {
+                  newSheet.setName(newName);
+                  range.setValue(newName);
+                  break;
+                }
+                catch (error) {
+                  i++;
+                }
+              }
+            }
+          }
+          updateSheetNameMemory();
         }
       }
-      if (sheet.getRange(row,1).getValue()) {
-        `checked`
-        SubtractIngredients(shoppingList, name, row, oldValue);
-        AddIngredients(shoppingList, name,row);
+      else if (column === 3) {
+        const cell = sheet.getRange(row,2);
+        const name = cell.getValue();
+        const isNumber = typeof newValue === 'number' && Number.isFinite(newValue);
+        if (!isNumber || Number(newValue) < 0) {
+          console.log('not a valid number');
+          oldValue = Number(oldValue);
+          if (Number.isFinite(oldValue)) {
+            range.setValue(oldValue);
+          }
+          else {
+            range.setValue(0);
+          }
+        }
+        if (sheet.getRange(row,1).getValue()) {
+          `checked`
+          SubtractIngredients(shoppingList, name, row, oldValue);
+          AddIngredients(shoppingList, name,row);
+        }
+      }
+      else if (column === 4) {
+        if (row != 1) {
+          const newTabName = recipeList.getRange(row,2).getValue();
+          transferTabs(newTabName,row,column);
+        }
+      }
+      else if (column === 5) {
+        const recipeName = recipeList.getRange(row,2).getValue();
+        const recipePage = workbook.getSheetByName(recipeName);
+        recipePage.getRange(1,13).setValue(newValue);
       }
     }
-    else if (column === 4) {
-      if (row != 1) {
-        const newTabName = recipeList.getRange(row,2).getValue();
-        transferTabs(newTabName,row,column);
-      }
+    else {
+      range.setValue(oldValue);
     }
   }
   else if (sheetName === "Shopping List") {
@@ -303,10 +297,10 @@ function onEdit(e) {
   }
   if (!sheetName.toLowerCase().includes("list")) {
     if (row === 1) {    
-      if (column === 10) {
+      if (column === 11) {
         if (newValue) {
           `checked`
-          if (Number(sheet.getRange(1,5).getValue()) <= 0) {
+          if (Number(sheet.getRange(1,6).getValue()) <= 0) {
             range.setValue(oldValue);
           }
           else {
@@ -321,16 +315,20 @@ function onEdit(e) {
             if (newRow > currentMaxRows) {
               sheet.insertRowsAfter(currentMaxRows,1000);
             }
-            const servings = sheet.getRange(1,5).getValue();
+            const servings = sheet.getRange(1,6).getValue();
             recipeList.getRange(newRow, 3).setValue(servings);
             recipeList.getRange(newRow,1).clearContent();
             recipeList.getRange(newRow,1).insertCheckboxes();
             recipeList.getRange(newRow,4).clearContent();
             recipeList.getRange(newRow,4).insertCheckboxes();
-            recipeList.getRange(newRow,5).setValue(sheet.getRange(1,12).getValue());
+            recipeList.getRange(newRow,5).setValue(sheet.getRange(1,13).getValue());
             const [possible, numServings] = isPossibleRecipe(sheet,getIngredients("Owned Items List"), Number(availableRecipes.getRange(1,5).getValue()));
             if (possible) {
               const insertRow = availableRecipes.getLastRow()+1;
+              const availableRecipesMaxRows = availableRecipes.getMaxRows();
+              if (insertRow > availableRecipesMaxRows) {
+                availableRecipes.insertRowsAfter(availableRecipesMaxRows,1000);
+              }
               availableRecipes.getRange(insertRow,1).setValue(sheetName);
               availableRecipes.getRange(insertRow,2).setValue(numServings);
               availableRecipes.getRange(insertRow,3).insertCheckboxes();
@@ -349,7 +347,7 @@ function onEdit(e) {
           }
         }
       }
-      else if (column === 8) {
+      else if (column === 9) {
         if (newValue) {
           `checked`
           transferTabs("Recipe List",row,column);
@@ -359,7 +357,7 @@ function onEdit(e) {
           console.log("unchecked somehow");
         }
       }
-      else if (column === 5) {
+      else if (column === 6) {
         const isNumber = typeof newValue === 'number' && Number.isFinite(newValue);
         if (!isNumber || Number(newValue) < 0) {
           console.log('not a valid number');
@@ -372,7 +370,7 @@ function onEdit(e) {
           }
         }
         else {
-          if (sheet.getRange(1,10).getValue()) { 
+          if (sheet.getRange(1,11).getValue()) { 
             if (Number(newValue) === 0) {
               range.setValue(oldValue);
             }
@@ -383,7 +381,7 @@ function onEdit(e) {
           }
         }
       }
-      else if (column <= 11) {
+      else if (column <= 12) {
         range.setValue(oldValue);
       }
     }

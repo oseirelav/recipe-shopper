@@ -29,31 +29,17 @@ function detectSheetChanges(e) {
 
     if (newSheet != null) {
       try {
-        newSheet.setFrozenRows(1);
-        const firstRow = newSheet.getRange("1:1");
-        firstRow.setBackground("#cfe2f3");
-        firstRow.setFontWeight("bold");
         const index = newSheet.getIndex();
         const prevSheetName = getSheetByIndex(index-1).getName();
         if (prevSheetName && !prevSheetName.includes("List")) {
-          const newItems = [["#",	"Unit",	"Item",	"Serves:",	0,	"Recipe",	"Go To Recipe List"]]
-          newSheet.getRange(1,1,1,7).setValues(newItems);
-          newSheet.setColumnWidth(1,50);
-          newSheet.setColumnWidth(2,50);
-          newSheet.setColumnWidth(3,150);
-          newSheet.setColumnWidth(4,60);
-          newSheet.setColumnWidth(5,50);
-          newSheet.getRange("C:C").setWrapStrategy(SpreadsheetApp.WrapStrategy.OVERFLOW);
-          newSheet.getRange("F:F").setWrapStrategy(SpreadsheetApp.WrapStrategy.OVERFLOW);
-          newSheet.setColumnWidth(7, 120);
-          newSheet.getRange("H1:H1").insertCheckboxes();
-          newSheet.setColumnWidth(8, 50);
-          newSheet.getRange(1,9).setValue("Completed?")
-          newSheet.getRange("J1:J1").insertCheckboxes();
-          newSheet.setColumnWidth(10, 50);
-          newSheet.getRange(1,11).setValue("Source:");
+          formatNewRecipeSheet(newSheet);
+        }
+        else {
+          formatAllNewSheets(newSheet);
         }
         updateSheetAddition(newSheet.getSheetId());
+        updateSheetEdit(recipeList.getSheetId());
+        updateSheetEdit(availableRecipes.getSheetId());
       }
       catch (error) {
         console.log(error);
@@ -115,7 +101,7 @@ function detectSheetChanges(e) {
     const [id, name] = findMissingId(); 
     if (name.toLowerCase().includes("list")) {
       const startRow = findRowWithValue(dataTrackerSheet,1,id);
-      if (startRow != 0) {
+      if (startRow > 0) {
         let rowCount = 1;
         const numRows = dataTrackerSheet.getLastRow()-startRow
         if (numRows >= 1) {
@@ -153,11 +139,7 @@ function detectSheetChanges(e) {
         workbook.insertSheet(name,index);
         const newSheet = workbook.getSheetByName(name);
         const values = dataTrackerSheet.getRange(startRow,2,rowCount,dataTrackerSheet.getLastColumn()).getValues();
-        console.log(values);
-        newSheet.setFrozenRows(1);
-        const firstRow = newSheet.getRange("1:1");
-        firstRow.setBackground("#cfe2f3");
-        firstRow.setFontWeight("bold");
+        formatAllNewSheets(newSheet);
         switch(name) {
           case 'Recipe List':
             newSheet.setColumnWidth(1,50);
@@ -221,8 +203,19 @@ function detectSheetChanges(e) {
             newSheet.insertRowsAfter(currentMaxRows,Math.ceil(numberRows/1000)*1000-currentMaxRows);
           }
           newSheet.getRange(1,1,numberRows,numberCols).setValues(values);
+          if (name === "Recipe List") {
+            for (let i = 2; i <= numberRows; i++) {
+              newSheet.getRange(i,1).insertCheckboxes();
+              newSheet.getRange(i,4).insertCheckboxes();
+            }
+          }
+          else if (name === "Available Recipes List") {
+            for (let i = 2; i <= numberRows; i++) {
+              newSheet.getRange(i,3).insertCheckboxes();
+            }
+          }
         }
-        updateSheetAddition(newSheet.getSheetId())
+        updateSheetAddition(newSheet.getSheetId());
         dataTrackerSheet.deleteRows(startRow, rowCount);
       }
     }
@@ -243,6 +236,8 @@ function detectSheetChanges(e) {
       if (rowToDeleteAvailableRecipes != 0 && rowToDeleteAvailableRecipes != 1) {
         availableRecipes.deleteRow(rowToDeleteAvailableRecipes);
       }
+      updateSheetEdit(recipeList.getSheetId());
+      updateSheetEdit(availableRecipes.getSheetId());
     }
   }
   updateSheetNameMemory();

@@ -123,7 +123,7 @@ function AddIngredients(sheet, name, row, oldValue = null) {
     `list empty`
     let i = 2;
     for (const [number, unit, item] of ingredientPairs) {
-      const [newNum, newUnit] = getNewUnit(number*(totalServings/servings), unit);   
+      const [newNum, newUnit] = getNewUnit(number*(totalServings/servings), unit, item);   
       setCell(sheet, i, 1, newNum);
       setCell(sheet, i, 2, newUnit);
       setCell(sheet, i, 3, item);
@@ -160,7 +160,7 @@ function AddIngredients(sheet, name, row, oldValue = null) {
               newNum = number*(totalServings/servings);
             }
           }
-          const [newNumber, newUn] = getNewUnit(newNum, newUnit);
+          const [newNumber, newUn] = getNewUnit(newNum, newUnit, item);
           setCell(sheet, i, 1, newNumber);
           setCell(sheet, i, 2, newUn);
           add = false;
@@ -168,7 +168,7 @@ function AddIngredients(sheet, name, row, oldValue = null) {
       }
       if (add) {
         `item does not exist`
-        const [newNum, newUnit] = getNewUnit(number*(totalServings/servings), unit);   
+        const [newNum, newUnit] = getNewUnit(number*(totalServings/servings), unit, item);   
         setCell(sheet, nextRow, 1, newNum);
         setCell(sheet, nextRow, 2, newUnit);
         setCell(sheet, nextRow, 3, item);
@@ -237,7 +237,7 @@ function SubtractIngredients(sheet, name=null, row=null, oldValue=null) {
             newNum = num-unitChange*(totalServings/servings);
 
           }
-          const [newNumber, newUn] = getNewUnit(newNum, newUnit);
+          const [newNumber, newUn] = getNewUnit(newNum, newUnit, item);
           setCell(sheet, i, 1, Math.max(newNumber,0));
           setCell(sheet, i, 2, newUn); 
         }

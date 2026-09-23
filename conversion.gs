@@ -1,5 +1,5 @@
 const weight = ['g','kg','lb','oz'];
-const volume = ['tsp','tbsp','cup','pint','quart','gal','fl oz','mL','L'];
+const volume = ['tsp','tbsp','cup','pint','quart','gal','fl oz','mL','L','stick'];
 const count = ['un','unit','','clove'];
 const small = ['bit','dash','pinch'];
 const units = [weight,volume,count,small];
@@ -96,6 +96,8 @@ function getVolumeConversion(unit, newUnit) {
           return 4.92892;
         case 'L':
           return 0.00492892;
+        case 'stick':
+          return 1/24;
         default:
           console.log('error: bad unit');
           return 0;
@@ -120,6 +122,8 @@ function getVolumeConversion(unit, newUnit) {
           return 14.7868;
         case 'L':
           return 0.0147868;
+        case 'stick':
+          return 1/8;
         default:
           console.log('error: bad unit');
           return 0;
@@ -144,6 +148,8 @@ function getVolumeConversion(unit, newUnit) {
           return 236.588;
         case 'L':
           return 0.236588;
+        case 'stick':
+          return 2;
         default:
           console.log('error: bad unit');
           return 0;
@@ -168,6 +174,8 @@ function getVolumeConversion(unit, newUnit) {
           return 473.176;
         case 'L':
           return 0.473176;
+        case 'stick':
+          return 4;
         default:
           console.log('error: bad unit');
           return 0;
@@ -192,6 +200,8 @@ function getVolumeConversion(unit, newUnit) {
           return 946.353;
         case 'L':
           return 0.946353;
+        case 'stick':
+          return 8;
         default:
           console.log('error: bad unit');
           return 0;
@@ -216,6 +226,8 @@ function getVolumeConversion(unit, newUnit) {
           return 3785.41;
         case 'L':
           return 3.78541;
+        case 'stick':
+          return 32;
         default:
           console.log('error: bad unit');
           return 0;
@@ -240,6 +252,8 @@ function getVolumeConversion(unit, newUnit) {
           return 29.5735;
         case 'L':
           return 0.0295735;
+        case 'stick':
+          return 1/4;
         default:
           console.log('error: bad unit');
           return 0;
@@ -264,6 +278,8 @@ function getVolumeConversion(unit, newUnit) {
           return 1;
         case 'L':
           return 0.001;
+        case 'stick':
+          return 0.00845351;
         default:
           console.log('error: bad unit');
           return 0;
@@ -287,6 +303,34 @@ function getVolumeConversion(unit, newUnit) {
         case 'mL':
           return 1000;
         case 'L':
+          return 1;
+        case 'stick':
+          return 8.45351;
+        default:
+          console.log('error: bad unit');
+          return 0;
+      }
+    case 'stick':
+      switch(newUnit) {
+        case 'tsp':
+          return 24;
+        case 'tbsp':
+          return 8;
+        case 'cup':
+          return 1/2;
+        case 'pint':
+          return 1/4;
+        case 'quart':
+          return 1/8;
+        case 'gal':
+          return 1/32;
+        case 'fl oz':
+          return 4;
+        case 'mL':
+          return 118.294;
+        case 'L':
+          return 0.118294;
+        case 'stick':
           return 1;
         default:
           console.log('error: bad unit');
@@ -373,8 +417,11 @@ function getNewWeightUnit(number, unit) {
   }
 }
 
-function getNewVolumeUnit(number, unit) {
+function getNewVolumeUnit(number, unit, item) {
   `choose volume conversion`
+  if (String(item).toLowerCase().endsWith("butter")) {
+    return 'stick';
+  }
   if (unit == 'mL') {
     if (number >= 1000) {
       return 'L';
@@ -392,7 +439,7 @@ function getNewVolumeUnit(number, unit) {
   }
 }
 
-function getNewUnit(number, unit) {
+function getNewUnit(number, unit, item) {
   `choose conversion`
   newUnit = ""
   switch(true) {
@@ -402,7 +449,7 @@ function getNewUnit(number, unit) {
       newUnit = getNewWeightUnit(number, unit);
       break;
     case volume.includes(unit):
-      newUnit = getNewVolumeUnit(number, unit);
+      newUnit = getNewVolumeUnit(number, unit, item);
       break;
     default:
       console.log('not a valid unit');
