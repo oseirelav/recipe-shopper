@@ -327,6 +327,7 @@ function onEdit(e) {
             recipeList.getRange(newRow,1).insertCheckboxes();
             recipeList.getRange(newRow,4).clearContent();
             recipeList.getRange(newRow,4).insertCheckboxes();
+            recipeList.getRange(newRow,5).setValue(sheet.getRange(1,12).getValue());
             const [possible, numServings] = isPossibleRecipe(sheet,getIngredients("Owned Items List"), Number(availableRecipes.getRange(1,5).getValue()));
             if (possible) {
               const insertRow = availableRecipes.getLastRow()+1;
@@ -381,6 +382,9 @@ function onEdit(e) {
             }
           }
         }
+      }
+      else if (column <= 11) {
+        range.setValue(oldValue);
       }
     }
   }

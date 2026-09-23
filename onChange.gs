@@ -51,6 +51,7 @@ function detectSheetChanges(e) {
           newSheet.getRange(1,9).setValue("Completed?")
           newSheet.getRange("J1:J1").insertCheckboxes();
           newSheet.setColumnWidth(10, 50);
+          newSheet.getRange(1,11).setValue("Source:");
         }
         updateSheetAddition(newSheet.getSheetId());
       }
