@@ -19,4 +19,6 @@ To make the detectSheetChanges function run, you will need to go to the Apps Scr
 - Select event type: On change
 - Failure notification settings: user's choice
 
-Alternatively, you can just use the following link to make a copy: https://docs.google.com/spreadsheets/d/1yE7BNk1ntmNBrrzOBUJMJ90M_J0ZPIrcYIBxZf5AA_g/copy
+Alternatively, you can just use the following link to make a copy: https://docs.google.com/spreadsheets/d/17bpsp80WC20p9w1RkF3cvRX46ZyBMPjzY5FGABPt_1I/copy
+
+Please note you will still need to go into Apps Script and set up the trigger for detectSheetChanges.

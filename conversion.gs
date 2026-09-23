@@ -1,6 +1,6 @@
 const weight = ['g','kg','lb','oz'];
 const volume = ['tsp','tbsp','cup','pint','quart','gal','fl oz','mL','L','stick'];
-const count = ['un','unit','','clove'];
+const count = ['un','unit','','clove', 'slice'];
 const small = ['bit','dash','pinch'];
 const units = [weight,volume,count,small];
 

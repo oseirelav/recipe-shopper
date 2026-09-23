@@ -297,7 +297,12 @@ function onEdit(e) {
   }
   if (!sheetName.toLowerCase().includes("list")) {
     if (row === 1) {    
-      if (column === 11) {
+      if (column === 13) {
+        if (sheet.getRange(1,11).getValue()) {
+          recipeList.getRange(findRowWithValue(recipeList,2,sheetName),5).setValue(newValue);
+        }
+      }
+      else if (column === 11) {
         if (newValue) {
           `checked`
           if (Number(sheet.getRange(1,6).getValue()) <= 0) {
@@ -381,7 +386,7 @@ function onEdit(e) {
           }
         }
       }
-      else if (column <= 12) {
+      else {
         range.setValue(oldValue);
       }
     }
