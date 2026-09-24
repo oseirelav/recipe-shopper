@@ -290,7 +290,7 @@ function onEdit(e) {
       }
     }
     else if (column == 1 && row != 1) {
-      if ((!newValue.includes(" ") || !newValue.includes("/")) && (!Number(newValue) || Number(newValue) < 0)) {
+      if (!String(newValue).includes("/") && (!Number(newValue) || Number(newValue) < 0)) {
         range.setValue(oldValue);
       }
     }
@@ -396,7 +396,7 @@ function onEdit(e) {
     else {
       if (column === 1) {
         const text = range.getDisplayValue().trim();
-        if (e.value instanceof Date || (!isNaN(Date.parse(e.value)) && text.includes("/"))) {
+        if (e.value instanceof Date || Date.parse(e.value)) {
           const dateObject = new Date(e.value);
           const numerator = dateObject.getMonth()+1;
           const denominator = dateObject.getDate();

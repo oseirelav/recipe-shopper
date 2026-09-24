@@ -3,7 +3,7 @@ const volume = ['tsp','tbsp','cup','pint','quart','gal','fl oz','mL','L','stick'
 const count = ['un','unit','','clove', 'slice', 'head'];
 const small = ['bit','dash','pinch'];
 const units = [weight,volume,count,small];
-const liquids = ['milk','water','juice','half-and-half','cream','oil','dressing','vinegar'];
+const liquids = ['milk','water','juice','half-and-half','cream','oil','dressing','vinegar','mayo','mustard'];
 
 function equivalentUnits(unit1, unit2) {
   return units.some(list => list.includes(unit1.toLowerCase()) && list.includes(unit2.toLowerCase()));
