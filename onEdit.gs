@@ -290,7 +290,7 @@ function onEdit(e) {
       }
     }
     else if (column == 1 && row != 1) {
-      if (!Number(newValue) || Number(newValue) < 0) {
+      if ((!newValue.includes(" ") || !newValue.includes("/")) && (!Number(newValue) || Number(newValue) < 0)) {
         range.setValue(oldValue);
       }
     }
@@ -402,6 +402,21 @@ function onEdit(e) {
           const denominator = dateObject.getDate();
           range.setValue(numerator/denominator);
           range.setNumberFormat("0.##");
+        }
+        if (text.includes(" ") && text.includes("/")) {
+          console.log("test");
+          const parts = text.split(" ");
+          const fractionParts = parts[1].split("/");
+          const integer = Number(parts[0]);
+          const numerator = Number(fractionParts[0]);
+          const denominator = Number(fractionParts[1]);
+          if (integer && numerator && denominator && denominator != 0) {
+            range.setValue(integer+numerator/denominator);
+            range.setNumberFormat("0.##");
+          }
+          else {
+            range.setValue(oldValue);
+          }
         }
       }
     }
