@@ -393,6 +393,18 @@ function onEdit(e) {
         range.setValue(oldValue);
       }
     }
+    else {
+      if (column === 1) {
+        const text = range.getDisplayValue().trim();
+        if (e.value instanceof Date || (!isNaN(Date.parse(e.value)) && text.includes("/"))) {
+          const dateObject = new Date(e.value);
+          const numerator = dateObject.getMonth()+1;
+          const denominator = dateObject.getDate();
+          range.setValue(numerator/denominator);
+          range.setNumberFormat("0.##");
+        }
+      }
+    }
   }
   updateSheetEdit(sheet.getSheetId());
 }
