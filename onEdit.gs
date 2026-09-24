@@ -344,6 +344,9 @@ function onEdit(e) {
           `unchecked`
           const newRow = findRowWithValue(recipeList,2, sheetName);
           if (newRow != 0 && newRow != 1) {
+            if (recipeList.getRange(newRow,1)) {
+              SubtractIngredients(shoppingList,sheetName,newRow);
+            }
             recipeList.deleteRow(newRow);
           }
           const rowToDeleteAvailableRecipes = findRowWithValue(availableRecipes, 1, sheetName);
