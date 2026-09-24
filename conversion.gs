@@ -1,6 +1,6 @@
 const weight = ['g','kg','lb','oz'];
 const volume = ['tsp','tbsp','cup','pint','quart','gal','fl oz','mL','L','stick'];
-const count = ['un','unit','','clove', 'slice'];
+const count = ['un','unit','','clove', 'slice', 'head'];
 const small = ['bit','dash','pinch'];
 const units = [weight,volume,count,small];
 const liquids = ['milk','water','juice','half-and-half','cream','oil','dressing'];
@@ -418,13 +418,22 @@ function getNewWeightUnit(number, unit) {
   }
 }
 
+function isLiquid(item) {
+  for (const liquid of liquids) {
+    if (item.includes(liquid)) {
+      return true;
+    }
+  }
+  return false;
+}
+
 function getNewVolumeUnit(number, unit, item) {
   `choose volume conversion`
   if (String(item).toLowerCase().endsWith("butter")) {
     return 'stick';
   }
   console.log(unit, number, item);
-  if (!liquids.includes(String(item).toLowerCase())) {
+  if (!isLiquid(String(item).toLowerCase())) {
     switch(unit) {
       case 'tsp':
         if (number >= 768) {
