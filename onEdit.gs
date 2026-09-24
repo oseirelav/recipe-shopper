@@ -279,7 +279,7 @@ function onEdit(e) {
       const numberCell = sheet.getRange(row,1);
       const number = numberCell.getValue();
       if (oldValue) {
-        if (!isUnit(oldValue) || !equivalentUnits(oldValue, newValue)) {
+        if ((!isUnit(newValue) && isUnit(oldValue)) || !equivalentUnits(oldValue, newValue)) {
           console.log('not a valid unit conversion');
           unitCell.setValue(oldValue);
         }
