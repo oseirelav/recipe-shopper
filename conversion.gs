@@ -3,6 +3,7 @@ const volume = ['tsp','tbsp','cup','pint','quart','gal','fl oz','mL','L','stick'
 const count = ['un','unit','','clove', 'slice'];
 const small = ['bit','dash','pinch'];
 const units = [weight,volume,count,small];
+const liquids = ['milk','water','juice','half-and-half','cream','oil','dressing'];
 
 function equivalentUnits(unit1, unit2) {
   return units.some(list => list.includes(unit1.toLowerCase()) && list.includes(unit2.toLowerCase()));
@@ -421,6 +422,115 @@ function getNewVolumeUnit(number, unit, item) {
   `choose volume conversion`
   if (String(item).toLowerCase().endsWith("butter")) {
     return 'stick';
+  }
+  console.log(unit, number, item);
+  if (!liquids.includes(String(item).toLowerCase())) {
+    switch(unit) {
+      case 'tsp':
+        if (number >= 768) {
+          return 'gal';
+        }
+        if (number >= 192) {
+          return 'quart';
+        }
+        if (number >= 96) {
+          return 'pint';
+        }
+        if (number >= 12) {
+          return 'cup';
+        }
+        if (number >= 3) {
+          return 'tbsp'
+        }
+        return 'tsp';
+      case 'tbsp':
+        if (number >= 256) {
+          return 'gal';
+        }
+        if (number >= 64) {
+          return 'quart';
+        }
+        if (number >= 32) {
+          return 'pint';
+        }
+        if (number >= 4) {
+          return 'cup';
+        }
+        if (number < 1) {
+          return 'tsp';
+        }
+        return 'tbsp';
+      case 'cup':
+        if (number >= 16) {
+          return 'gal';
+        }
+        if (number >= 4) {
+          return 'quart';
+        }
+        if (number >= 2) {
+          return 'pint';
+        }
+        if (number < 3/16) {
+          return 'tsp';
+        }
+        if (number < 1/4) {
+          return 'tbsp';
+        }
+        return 'cup';
+      case 'pint':
+        if (number >= 8) {
+          return 'gal';
+        }
+        if (number >= 2) {
+          return 'quart';
+        }
+        if (number < 1/32) {
+          return 'tsp';
+        }
+        if (number < 1/8) {
+          return 'tbsp';
+        }
+        if (number < 1) {
+          return 'cup';
+        }
+        return 'pint';
+      case 'quart':
+        if (number >= 4) {
+          return 'gal';
+        }
+        if (number < 1/64) {
+          return 'tsp';
+        }
+        if (number < 1/16) {
+          return 'tbsp';
+        }
+        if (number < 1/2) {
+          return 'cup';
+        }
+        if (number < 1) {
+          return 'pint';
+        }
+        return 'quart';
+      case 'gal':
+        if (number < 1/256) {
+          return 'tsp';
+        }
+        if (number < 1/64) {
+          return 'tbsp';
+        }
+        if (number < 1/8) {
+          return 'cup';
+        }
+        if (number < 1/4) {
+          return 'pint';
+        }
+        if (number < 1) {
+          return 'quart';
+        }
+        return 'gal';
+      default:
+        break;
+    }
   }
   if (unit == 'mL') {
     if (number >= 1000) {

@@ -5,13 +5,13 @@ function getNumServings(name) {
     const lastRow = dataTrackerSheet.getLastRow();
     for (let i = 1; i <= lastRow; i++) {
       if (dataTrackerSheet.getRange(i,1).getValue() === -1) {
-        return dataTrackerSheet.getRange(i,6).getValue();
+        return dataTrackerSheet.getRange(i,7).getValue();
       }
     }
     return -1;
   }
   const recipe = workbook.getSheetByName(name);
-  const servingRange = recipe.getRange(1,5);
+  const servingRange = recipe.getRange(1,6);
   const servings = servingRange.getValue();
   return servings;
 }
